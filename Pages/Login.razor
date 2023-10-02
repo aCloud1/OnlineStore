@@ -43,13 +43,12 @@
 	private async Task authenticate()
 	{
 		var account = account_service.getAccountByEmail(user_input.email);
-		if (account == null || user_input.password != account.password)			// todo: password checking should be done in AccountManager class
+		if (account == null || user_input.password != account.password)
 		{
 			await js.InvokeVoidAsync("alert", "Email or password is invalid.");
 			return;
 		}
 
-		//var auth = (Authentication)authentication;	// is this needed?
 		await authentication.updateAuthenticationState(new UserSession
 			{
 				email = account.email,
