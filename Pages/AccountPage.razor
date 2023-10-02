@@ -1,0 +1,23 @@
+﻿@page "/account"
+
+@using Microsoft.AspNetCore.Authorization;
+@using OnlineStore;
+@using Microsoft.AspNetCore.Components.Authorization
+
+<h3>AccountPage</h3>
+<div>
+	<AuthorizeView>
+		<Authorized>
+			<p>Hello, this is your account page</p>
+		</Authorized>
+
+		<NotAuthorized>
+			<a href="/login">Please login</a>
+		</NotAuthorized>
+	</AuthorizeView>
+</div>
+
+
+@code {
+
+}

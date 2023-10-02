@@ -1,0 +1,45 @@
+﻿@page "/"
+
+@inject IJSRuntime js
+
+@using Microsoft.AspNetCore.Components.Authorization
+
+<PageTitle>Home</PageTitle>
+
+<header>
+	<div>
+		<p>this is a header</p>
+	</div>
+</header>
+
+<AuthorizeView>
+	<Authorized>
+		<h1>Welcome, @context.User.Identity.Name.</h1>
+	</Authorized>
+
+	<NotAuthorized>
+		<h1>Welcome, Guest.</h1>
+	</NotAuthorized>
+</AuthorizeView>
+
+<AuthorizeView>
+	<Authorized>
+		<button @onclick="displayGreeting">Display greeting alert</button>
+	</Authorized>
+</AuthorizeView>
+
+
+@code
+{
+	[CascadingParameter]
+	private Task<AuthenticationState> authentication_state { get; set; }
+
+	private async Task displayGreeting()
+	{
+		var auth_state = await authentication_state;
+		var message = $"Hello {auth_state.User.Identity.Name}";
+		await js.InvokeVoidAsync("alert", message);
+	}
+
+
+}

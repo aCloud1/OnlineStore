@@ -1,0 +1,61 @@
+﻿@page "/login"
+
+@using OnlineStore
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IJSRuntime js
+@inject AccountService account_service
+@inject Authentication authentication
+@inject NavigationManager nav_manager
+
+<div class="login_element">
+	<AuthorizeView>
+		<Authorized>
+			<a href="/account">You are logged in.</a>
+		</Authorized>
+
+		<NotAuthorized>
+			<div>
+				<label>Email</label>
+				<input @bind="user_input.email" />
+				<label>Password</label>
+				<input @bind="user_input.password" type="password" />
+			</div>
+			<button @onclick="authenticate">Login</button>
+			<a href="/register">Registration</a>
+			<a href="/forgot_password">Forgot password?</a>
+		</NotAuthorized>
+	</AuthorizeView>
+
+</div>
+
+
+
+@code
+{
+	class UserInput
+	{
+		public string email { get; set; }
+		public string password { get; set; }
+	}
+
+	UserInput user_input = new UserInput();
+
+	private async Task authenticate()
+	{
+		var account = account_service.getAccountByEmail(user_input.email);
+		if (account == null || user_input.password != account.password)			// todo: password checking should be done in AccountManager class
+		{
+			await js.InvokeVoidAsync("alert", "Email or password is invalid.");
+			return;
+		}
+
+		//var auth = (Authentication)authentication;	// is this needed?
+		await authentication.updateAuthenticationState(new UserSession
+			{
+				email = account.email,
+				role = account.role
+			});
+		nav_manager.NavigateTo("/", true);
+	}
+
+}

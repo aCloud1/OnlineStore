@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using OnlineStore
+@inherits LayoutComponentBase
+@inject Authentication authentication
+@inject NavigationManager nav_manager
+
+<PageTitle>OnlineStore</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+        <main>
+            <div class="top-row px-4">
+                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                <a @onclick="logout" href="javascript:void(0)">Logout</a>
+                <a href="/login">Login</a>
+            </div>
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+    </Authorized>
+
+    <NotAuthorized>
+        <OnlineStore.Pages.RedirectToLogin/>
+    </NotAuthorized>
+
+</AuthorizeView>
+
+@code
+{
+    private async Task logout()
+    {
+        var auth_state_provider = (Authentication)authentication;
+        await auth_state_provider.updateAuthenticationState(null);
+        nav_manager.NavigateTo("/", true);
+    }
+}
