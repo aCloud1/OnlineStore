@@ -48,16 +48,23 @@
 			return;
 		}
 
-		account_service.createAccount(
-			user_input.first_name,
-			user_input.second_name,
-			user_input.phone_number,
-			user_input.email,
-			user_input.password
-		);
+		Account? new_account;
+		try
+		{
+			new_account = account_service.createAccount(
+				user_input.first_name,
+				user_input.second_name,
+				user_input.phone_number,
+				user_input.email,
+				user_input.password
+				);
 
-		await js.InvokeVoidAsync("alert", "Success!");
-
-		nav_manager.NavigateTo("/", true);
+			await js.InvokeVoidAsync("alert", "Success!");
+			nav_manager.NavigateTo("/", true);
+		}
+		catch(ArgumentException e)
+		{
+			await js.InvokeVoidAsync("alert", $"Invalid input - {e.Message}. Try again.");
+		}
 	}
 }
