@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
 
-namespace OnlineStore
+namespace OnlineStore.Services
 {
     public class Authentication : AuthenticationStateProvider
     {

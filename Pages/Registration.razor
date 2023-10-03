@@ -1,7 +1,9 @@
 ﻿@page "/register"
 
+@using OnlineStore.Services;
+
 @inject IJSRuntime js
-@inject AccountService account_service
+@inject OnlineStore.Services.AccountService account_service
 @inject NavigationManager nav_manager
 
 <div class="registration_element">
