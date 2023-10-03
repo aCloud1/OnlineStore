@@ -1,9 +1,11 @@
 ﻿@page "/register"
 
 @using OnlineStore.Services;
+@using Microsoft.AspNetCore.Components.Authorization
 
 @inject IJSRuntime js
 @inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
 @inject NavigationManager nav_manager
 
 <div class="registration_element">
@@ -62,6 +64,9 @@
 				);
 
 			await js.InvokeVoidAsync("alert", "Success!");
+
+			await authentication.updateAuthenticationState(new UserSession(new_account.email_address, new_account.role));
+
 			nav_manager.NavigateTo("/", true);
 		}
 		catch(ArgumentException e)
