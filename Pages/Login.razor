@@ -16,7 +16,7 @@
 		<NotAuthorized>
 			<div>
 				<label>Email</label>
-				<input @bind="user_input.email" />
+				<input @bind="user_input.email_address" />
 				<label>Password</label>
 				<input @bind="user_input.password" type="password" />
 			</div>
@@ -34,7 +34,7 @@
 {
 	class UserInput
 	{
-		public string email { get; set; }
+		public string email_address { get; set; }
 		public string password { get; set; }
 	}
 
@@ -42,7 +42,7 @@
 
 	private async Task authenticate()
 	{
-		var account = account_service.getAccountByEmail(user_input.email);
+		var account = account_service.getAccountByEmail(user_input.email_address);
 		if (account == null || user_input.password != account.password)
 		{
 			await js.InvokeVoidAsync("alert", "Email or password is invalid.");
@@ -51,7 +51,7 @@
 
 		await authentication.updateAuthenticationState(new UserSession
 			{
-				email = account.email,
+				email_address = account.email_address,
 				role = account.role
 			});
 		nav_manager.NavigateTo("/", true);

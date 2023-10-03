@@ -30,8 +30,8 @@ namespace OnlineStore
 					return await Task.FromResult(new AuthenticationState(anonymous));
 
 				var claims_principal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim> {
-					new Claim(ClaimTypes.Name, $"{user_session.role}-{user_session.email}"),
-					new Claim(ClaimTypes.Email, user_session.email),
+					new Claim(ClaimTypes.Name, $"{user_session.role}-{user_session.email_address}"),
+					new Claim(ClaimTypes.Email, user_session.email_address),
 					new Claim(ClaimTypes.Role, user_session.role),
 					new Claim(ClaimTypes.Anonymous, "false")
 				}, "Login"));;
@@ -52,7 +52,7 @@ namespace OnlineStore
 				await session_storage.SetAsync("UserSession", user_session);
 				claims_principal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
 				{
-					new Claim(ClaimTypes.Email, user_session.email),
+					new Claim(ClaimTypes.Email, user_session.email_address),
 					new Claim(ClaimTypes.Role, user_session.role)
 				}));
 			}

@@ -1,23 +1,26 @@
 ﻿@page "/register"
 
+@inject IJSRuntime js
+@inject AccountService account_service
+@inject NavigationManager nav_manager
 
 <div class="registration_element">
 	<div>
 		<p>First name</p>
-		<input id="first_name"/>
+		<input id="first_name" @bind="user_input.first_name" />
 		<p>Second name</p>
-		<input id="second_name"/>
+		<input id="second_name" @bind="user_input.second_name" />
 		<p>Phone number</p>
-		<input id="phone_number"/>
+		<input id="phone_number" @bind="user_input.phone_number" />
 		<p>Email</p>
-		<input id="email"/>
+		<input id="email" @bind="user_input.email" />
 		<p>Password</p>
-		<input id="password"/>
+		<input id="password" type="password" @bind="user_input.password" />
 	</div>
 	<div>
-	<input type="checkbox" class="input_checkbox" name="tos"/>
+	<input type="checkbox" class="input_checkbox" name="tos" @bind="user_input.agreed_to_tos"/>
 	<label for="tos">I have read and agree with <a href="" class="link_tos">Terms of Service</a></label>
-	<button>Register</button>
+	<button @onclick="() => validateInput()">Register</button>
 	</div>
 </div>
 
@@ -25,4 +28,36 @@
 
 @code {
 
+	public class UserInput
+	{
+		public string first_name;
+		public string second_name;
+		public string phone_number;
+		public string email;
+		public string password;
+		public bool agreed_to_tos;
+	}
+
+	UserInput user_input = new UserInput();
+
+	private async Task validateInput()
+	{
+		if(!user_input.agreed_to_tos)
+		{
+			await js.InvokeVoidAsync("alert", "You must agree to Terms of Service!");
+			return;
+		}
+
+		account_service.createAccount(
+			user_input.first_name,
+			user_input.second_name,
+			user_input.phone_number,
+			user_input.email,
+			user_input.password
+		);
+
+		await js.InvokeVoidAsync("alert", "Success!");
+
+		nav_manager.NavigateTo("/", true);
+	}
 }
