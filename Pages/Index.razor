@@ -34,6 +34,8 @@
 	[CascadingParameter]
 	private Task<AuthenticationState> authentication_state { get; set; }
 
+	// todo: display account owner's name, not account id !!!
+
 	private async Task displayGreeting()
 	{
 		var auth_state = await authentication_state;

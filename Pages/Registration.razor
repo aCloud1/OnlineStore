@@ -11,11 +11,11 @@
 <div class="registration_element">
 	<div>
 		<p>First name</p>
-		<input id="first_name" @bind="user_input.first_name" />
+		<input id="first_name" @bind="user_input.personal_data.first_name" />
 		<p>Second name</p>
-		<input id="second_name" @bind="user_input.second_name" />
+		<input id="second_name" @bind="user_input.personal_data.second_name" />
 		<p>Phone number</p>
-		<input id="phone_number" @bind="user_input.phone_number" />
+		<input id="phone_number" @bind="user_input.personal_data.phone_number" />
 		<p>Email</p>
 		<input id="email" @bind="user_input.email" />
 		<p>Password</p>
@@ -34,12 +34,15 @@
 
 	public class UserInput
 	{
-		public string first_name;
-		public string second_name;
-		public string phone_number;
+		public Person personal_data;
 		public string email;
 		public string password;
 		public bool agreed_to_tos;
+
+		public UserInput()
+		{
+			personal_data = new Person();
+		}
 	}
 
 	UserInput user_input = new UserInput();
@@ -55,17 +58,15 @@
 		Account? new_account;
 		try
 		{
-			new_account = account_service.createAccount(
-				user_input.first_name,
-				user_input.second_name,
-				user_input.phone_number,
+			new_account = account_service.createCustomerAccount(
 				user_input.email,
-				user_input.password
+				user_input.password,
+				user_input.personal_data
 				);
 
 			await js.InvokeVoidAsync("alert", "Success!");
 
-			await authentication.updateAuthenticationState(new UserSession(new_account.email_address, new_account.role));
+			await authentication.updateAuthenticationState(new UserSession(new_account.id, new_account.role));
 
 			nav_manager.NavigateTo("/", true);
 		}

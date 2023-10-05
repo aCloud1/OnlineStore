@@ -2,14 +2,14 @@
 {
     public class UserSession
     {
-        public string email_address { get; set; }
+        public string id { get; set; }
         public string role { get; set; }
 
         public UserSession() { }
 
-        public UserSession(string email_address, string role)
+        public UserSession(string id, string role)
         {
-            this.email_address = email_address;
+            this.id = id;
             this.role = role;
         }
     }

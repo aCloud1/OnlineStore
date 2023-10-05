@@ -52,7 +52,7 @@
 
 		await authentication.updateAuthenticationState(new UserSession
 			{
-				email_address = account.email_address,
+				id = account.id,
 				role = account.role
 			});
 		nav_manager.NavigateTo("/", true);

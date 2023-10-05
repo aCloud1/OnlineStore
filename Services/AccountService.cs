@@ -11,30 +11,35 @@
 
             accounts = new List<Account>
             {
-                new Employee(generateId(), "admin", "admin"),
-                new Customer(generateId(), "user", "user")
+                new Employee(generateId(), "admin", "admin", new Person("ad", "min", "home", "+12345678901")),
+                new Customer(generateId(), "user", "user", new Person("u", "ser", "home2", "+98765432109"))
             };
         }
 
-        public Account? getAccountByEmail(string email)
+
+        public Account? getAccountByEmail(string email_address)
+		{
+			return accounts.FirstOrDefault(acc => acc.email_address == email_address);
+		}
+
+		public Account? getAccountById(string id)
         {
-            return accounts.FirstOrDefault(x => x.email_address == email);
+            return accounts.FirstOrDefault(acc => acc.id == id);
         }
 
-        public Account? createAccount(string first_name,
-                                        string second_name,
-                                        string phone_number,
+        public Account? createCustomerAccount(
                                         string email_address,
-                                        string password)
+                                        string password,
+                                        Person personal_data)
         {
-            account_validator.validateName(first_name);
-            account_validator.validateName(second_name);
-            account_validator.validatePhoneNumber(phone_number);
+            account_validator.validateName(personal_data.first_name);
+            account_validator.validateName(personal_data.second_name);
+            account_validator.validatePhoneNumber(personal_data.phone_number);
             account_validator.validateEmailAddress(email_address);
             account_validator.validatePassword(password);
 
             string id = generateId();
-            Account account = new Customer(id, email_address, password);
+            Account account = new Customer(id, email_address, password, personal_data);
             accounts.Add(account);
             return account;
         }
