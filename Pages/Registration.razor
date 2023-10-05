@@ -46,6 +46,8 @@
 	}
 
 	UserInput user_input = new UserInput();
+	Account? new_account;
+
 
 	private async Task validateInput()
 	{
@@ -55,7 +57,23 @@
 			return;
 		}
 
-		Account? new_account;
+
+		Account? existing_account = account_service.getAccountByEmail(user_input.email);
+		if(existing_account != null)
+		{
+			bool confirmed = await js.InvokeAsync<bool>("confirm", "An account with this email address already exists. Do you want to login?");
+			if (confirmed)
+			{
+				nav_manager.NavigateTo($"/login/{existing_account.id}");
+				return;
+			}
+
+			await js.InvokeVoidAsync("alert", "This email address is taken!");
+			return;
+		}
+
+
+
 		try
 		{
 			new_account = account_service.createCustomerAccount(

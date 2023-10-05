@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/login/{user_id}"
 
 @using OnlineStore.Services;
 @using Microsoft.AspNetCore.Components.Authorization
@@ -17,7 +17,7 @@
 		<NotAuthorized>
 			<div>
 				<label>Email</label>
-				<input @bind="user_input.email_address" />
+				<input @bind="user_input.email_address"/>
 				<label>Password</label>
 				<input @bind="user_input.password" type="password" />
 			</div>
@@ -33,6 +33,10 @@
 
 @code
 {
+	[Parameter]
+	public string user_id { get; set; }
+
+
 	class UserInput
 	{
 		public string email_address { get; set; }
@@ -40,10 +44,21 @@
 	}
 
 	UserInput user_input = new UserInput();
+	Account? account;
+
+	protected override void OnParametersSet()
+	{
+		account = account_service.getAccountById(user_id);
+		if(account != null)
+			user_input.email_address = account.email_address;
+	}
 
 	private async Task authenticate()
 	{
-		var account = account_service.getAccountByEmail(user_input.email_address);
+		if(account == null)
+			account = account_service.getAccountByEmail(user_input.email_address);
+
+
 		if (account == null || user_input.password != account.password)
 		{
 			await js.InvokeVoidAsync("alert", "Email or password is invalid.");
