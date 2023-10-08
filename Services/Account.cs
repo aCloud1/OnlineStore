@@ -56,7 +56,7 @@ namespace OnlineStore.Services
     }
 
 
-    public class Person
+    public class Person : IFormattable
     {
         public string first_name;
         public string second_name;
@@ -72,5 +72,32 @@ namespace OnlineStore.Services
             this.home_address = home_address;
             this.phone_number = phone_number;
 		}
-    }
+
+		public string ToString(string? format, IFormatProvider? formatProvider)
+		{
+			string buffer = "";
+            if (format != null)
+            {
+                switch (format.ToLower())
+                {
+                    case "text":
+                        buffer = $"{first_name} {second_name} lives at {home_address} and is reachable by calling {phone_number}";
+                        break;
+
+                    case "json":
+                        buffer += "{\n";
+                        buffer += $"  \"first_name\": \"{first_name}\",\n";
+                        buffer += $"  \"second_name\": \"{second_name}\",\n";
+                        buffer += $"  \"home_address\": \"{home_address}\",\n";
+                        buffer += $"  \"phone_number\": \"{phone_number}\"\n";
+                        buffer += "}";
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            return buffer;
+		}
+	}
 }

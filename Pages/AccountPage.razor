@@ -73,6 +73,14 @@
 				<button @onclick="sortTransactionsAsc">Sort ^</button>
 				<button @onclick="sortTransactionsDesc">Sort v</button>
 			}
+
+			<br />
+			<div>
+				<h3>Export my personal data as:</h3>
+				<button @onclick="exportAccountDataAsText">Text</button>
+				<button @onclick="exportAccountDataAsJSON">JSON</button>
+				<textarea @bind="dataAsFormattedText"></textarea>
+			</div>
 		</Authorized>
 
 		<NotAuthorized>
@@ -84,6 +92,8 @@
 
 @code {
 	Account? account;
+
+	string dataAsFormattedText = "";
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -121,6 +131,18 @@
 	public void sortTransactionsDesc()
 	{
 		account.transactions.Sort();
+		StateHasChanged();
+	}
+
+	public void exportAccountDataAsText()
+	{
+		dataAsFormattedText = account.personal_data.ToString("Text", null);
+		StateHasChanged();
+	}
+
+	public void exportAccountDataAsJSON()
+	{
+		dataAsFormattedText = account.personal_data.ToString("JSON", null);
 		StateHasChanged();
 	}
 }
