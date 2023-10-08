@@ -6,7 +6,6 @@ namespace OnlineStore.Services
     {
     }
 
-
     public class AccountValidator : Validator
     {
         public Regex regex_name = new Regex(@"^[a-zA-z]+$");

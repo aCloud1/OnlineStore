@@ -33,16 +33,10 @@ namespace OnlineStore.Services
     }
 
 
-    public interface EmployeeActions
-    {
-        public void clearTransactions();
-    }
-
     public class Employee : Account, EmployeeActions
     {
         public Employee(string id, string email_address, string password, Person personal_data)
             : base(id, ROLES.Admin, email_address, password, personal_data) { }
-
 
         public void clearTransactions()
         {
@@ -51,5 +45,9 @@ namespace OnlineStore.Services
     }
 
 
+	public interface EmployeeActions
+	{
+		public void clearTransactions();
+	}
 
 }

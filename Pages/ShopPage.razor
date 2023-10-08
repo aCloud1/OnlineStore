@@ -12,7 +12,7 @@
 
 <div class="item_list_wrapper">
 	<div class="item_list">
-		@foreach (var s in shop.stock_manager.items_in_stock)
+		@foreach (var s in shop.stock_manager.items)
 		{
 			<div class="item_wrapper">
 				<div class="item_image" @onclick="() => addToCart(s.id)">
@@ -48,16 +48,22 @@
 
 	public async void addToCart(string itemId)
 	{
-		// todo: handle exceptions
-		Item item = shop.getItemById(itemId);
-
-		if(account == null)
+		if (account == null)
 		{
 			await js.InvokeVoidAsync("alert", "You must be logged in!");
 			return;
 		}
 
-		account.shopping_cart.addItem(item);
-		await js.InvokeVoidAsync("alert", $"Item #{itemId} added to cart!");
+		Item? item;
+		try
+		{
+			item = shop.getItemById(itemId);
+			account.shopping_cart.addItem(item);
+			await js.InvokeVoidAsync("alert", $"Item #{itemId} added to cart!");
+		}
+		catch(Exception e)
+		{
+			await js.InvokeVoidAsync("alert", $"{e.Message}.");	
+		}
 	}
 }

@@ -2,25 +2,42 @@
 {
 	public class StockManager
 	{
-		public List<Item> items_in_stock { get; set; }
+		public List<Item> items { get; set; }
+		public Dictionary<string, int> stock { get; set; }
 		public StockManager()
 		{
-			items_in_stock = new List<Item>();
-			items_in_stock.Add(new Item("0001", 10));
-			items_in_stock.Add(new Item("0002", 54));
-			items_in_stock.Add(new Item("0003", 21));
-			items_in_stock.Add(new Item("0004", 10));
-			items_in_stock.Add(new Item("0005", 54));
-			items_in_stock.Add(new Item("0006", 21));
-			items_in_stock.Add(new Item("0007", 54));
-			items_in_stock.Add(new Item("0008", 21));
+			items = new List<Item>
+			{
+				new Item("01", 20),
+				new Item("02", 10),
+				new Item("03", 45),
+				new Item("04", 80)
+			};
 
+			stock = new Dictionary<string, int>();
+
+			foreach(var item in items)
+			{
+				stock.Add(item.id, 5);
+			}
 		}
 
 		public Item getItemById(string id)
 		{
-			// todo: add error checking
-			return items_in_stock.Find(item => item.id == id);
+			Item item = items.Find(i => i.id == id);
+			if (item is null)
+				throw new ArgumentException($"Item {id} does not exist");
+
+			if (getItemCount(id) <= 0)
+				throw new ApplicationException($"Item {id} is out of stock");
+
+			stock[id]--;
+			return item;
+		}
+
+		public int getItemCount(string id)
+		{
+			return stock[id];
 		}
 	}
 }
