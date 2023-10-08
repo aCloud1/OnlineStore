@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
 
+@inject IJSRuntime js
 @inject OnlineStore.Services.AccountService account_service
 @inject OnlineStore.Services.Authentication authentication
 @inject NavigationManager nav_manager
@@ -48,6 +49,7 @@
 				</td>
 			</tr>
 
+			<br />
 			<h3>Your transactions</h3>
 			@if(account == null || account.transactions.Count == 0)
 			{
@@ -68,6 +70,8 @@
 						<td>@t.total</td>
 					</tr>
 				}
+				<button @onclick="sortTransactionsAsc">Sort ^</button>
+				<button @onclick="sortTransactionsDesc">Sort v</button>
 			}
 		</Authorized>
 
@@ -97,7 +101,7 @@
 		}
 		catch
 		{
-			
+
 		}
 
 		if (account == null)
@@ -106,5 +110,17 @@
 		}
 
 		base.OnInitialized();
+	}
+
+	public void sortTransactionsAsc()
+	{
+		account.transactions.Sort((a, b) => b.CompareTo(a));
+		StateHasChanged();
+	}
+
+	public void sortTransactionsDesc()
+	{
+		account.transactions.Sort();
+		StateHasChanged();
 	}
 }
