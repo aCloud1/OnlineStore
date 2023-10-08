@@ -28,9 +28,8 @@
 </div>
 
 @code {
-	Account account;
+	Account? account;
 	Shop shop = new Shop();
-	ShoppingCart anonymous_cart = new ShoppingCart();
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -53,10 +52,12 @@
 		Item item = shop.getItemById(itemId);
 
 		if(account == null)
-			anonymous_cart.addItem(item);
-		else
-			account.shopping_cart.addItem(item);
+		{
+			await js.InvokeVoidAsync("alert", "You must be logged in!");
+			return;
+		}
 
+		account.shopping_cart.addItem(item);
 		await js.InvokeVoidAsync("alert", $"Item #{itemId} added to cart!");
 	}
 }

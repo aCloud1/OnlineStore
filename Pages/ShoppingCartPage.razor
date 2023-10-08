@@ -9,52 +9,42 @@
 @inject OnlineStore.Services.Authentication authentication
 @inject NavigationManager nav_manager
 
-<h3>Shopping cart:</h3>
+<h3>Shopping cart</h3>
 <div>
-	@if (
-		(account == null && anonymous_cart.items.Count == 0) ||
-		(account != null && account.shopping_cart.items.Count == 0)
-	)
+	@if(account == null)
 	{
-		<p>Empty.</p>
-	}
-	else if (account == null)
-	{
-		<p>Loading...</p>
+		<p>You must be <a href="/login/user">logged in</a>.</p>
 	}
 	else
 	{
-		<tr>
-			<td>Item ID</td>
-			<td>Price</td>
-		</tr>
-		@foreach (var item in account.shopping_cart.items)
+		if(account.shopping_cart.items.Count == 0)
+		{
+			<p>Shopping cart is empty!</p>
+		}
+		else
 		{
 			<tr>
-				<td>@item.id</td>
-				<td>@item.price</td>
+				<td>Item ID</td>
+				<td>Price</td>
 			</tr>
+			@foreach (var item in account.shopping_cart.items)
+			{
+				<tr>
+					<td>@item.id</td>
+					<td>@item.price</td>
+				</tr>
+			}
+			<button @onclick="() => goToCheckout()">Go to checkout</button>
 		}
 	}
-
-	<a @onclick="() => goToCheckout()">Go to checkout</a>
 </div>
-
 
 
 @code {
 	Account? account;
-	ShoppingCart anonymous_cart = new ShoppingCart();
 
 	protected async override Task OnInitializedAsync()
 	{
-		/*
-			if logged in
-				[+] get shopping cart if account has one, else create
-			else
-				[+] create shopping cart
-				[ ] hold it until user logs in or registers and then assign the shopping cart to him
-		*/
 		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
 		try
 		{
@@ -63,19 +53,13 @@
 		}
 		catch
 		{
-
+			Logger.log($"ShoppingCartPage: account not found.");
 		}
 		base.OnInitialized();
 	}
 
 	private async void goToCheckout()
 	{
-		if(account == null)
-		{
-			await js.InvokeVoidAsync("alert", "Please login first.");
-			return;
-		}
-
 		nav_manager.NavigateTo($"/checkout");
 	}
 }
