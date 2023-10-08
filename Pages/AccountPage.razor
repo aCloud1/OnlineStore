@@ -71,7 +71,15 @@
 			nav_manager.NavigateTo("/login");
 		}
 
-		account = account_service.getAccountById(account_id);
+		try
+		{
+			account = account_service.getAccountById(account_id);
+		}
+		catch
+		{
+			
+		}
+
 		if (account == null)
 		{
 			nav_manager.NavigateTo("/login");

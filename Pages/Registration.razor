@@ -57,9 +57,17 @@
 			return;
 		}
 
+		Account? existing_account = null;
+		try
+		{
+			existing_account = account_service.getAccountByEmail(user_input.email);
+		}
+		catch (Exception e)
+		{
+			Logger.log($"{e.Message}. Creating with email {user_input.email}.");
+		}
 
-		Account? existing_account = account_service.getAccountByEmail(user_input.email);
-		if(existing_account != null)
+		if(existing_account is not null)
 		{
 			bool confirmed = await js.InvokeAsync<bool>("confirm", "An account with this email address already exists. Do you want to login?");
 			if (confirmed)
@@ -83,9 +91,7 @@
 				);
 
 			await js.InvokeVoidAsync("alert", "Success!");
-
 			await authentication.updateAuthenticationState(new UserSession(new_account.id, new_account.role));
-
 			nav_manager.NavigateTo("/", true);
 		}
 		catch(ArgumentException e)

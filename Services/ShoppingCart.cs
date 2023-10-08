@@ -2,13 +2,15 @@
 {
     public class ShoppingCart
     {
+        public string id;
         private List<Item> items;
         private StockManager stock_manager;
 
         public ShoppingCart(StockManager stock_manager)
         {
+            this.id = Id.generate();
             this.stock_manager = stock_manager;
-
+            
             items = new List<Item>();
         }
 
