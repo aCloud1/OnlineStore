@@ -9,10 +9,6 @@
 		{
 			this.id = Id.generate();
 			items = new List<Item>();
-
-					items.Add(new Item("01", 10));
-					items.Add(new Item("02", 15));
-					items.Add(new Item("03", 8));
 		}
 
 		public List<Item> getItems()
@@ -26,8 +22,9 @@
 			return items[index];
 		}
 
-		public void addItem(string id)
+		public void addItem(Item item)
 		{
+			items.Add(item);
 		}
 
 		public void removeItemById(string id)

@@ -1,8 +1,12 @@
 ﻿@page "/shop"
 
 @using OnlineStore.Services;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
 
 @inject IJSRuntime js
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
 
 <h3>Shop</h3>
 
@@ -24,18 +28,34 @@
 </div>
 
 @code {
-
+	Account account;
 	Shop shop = new Shop();
+	ShoppingCart anonymous_cart = new ShoppingCart();
 
-	// todo:  get from account
-	ShoppingCart shopping_cart = new ShoppingCart();
-
+	protected async override Task OnInitializedAsync()
+	{
+		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
+		try
+		{
+			string account_id = auth.User.Identity.Name;
+			account = account_service.getAccountById(account_id);
+		}
+		catch(Exception e)
+		{
+			Logger.log("Adding items to anonymous cart.");
+		}
+		base.OnInitialized();
+	}
 
 	public async void addToCart(string itemId)
 	{
-		// get item from the shop
-		// and
-		shopping_cart.addItem(itemId);
+		// todo: handle exceptions
+		Item item = shop.getItemById(itemId);
+
+		if(account == null)
+			anonymous_cart.addItem(item);
+		else
+			account.shopping_cart.addItem(item);
 
 		await js.InvokeVoidAsync("alert", $"Item #{itemId} added to cart!");
 	}

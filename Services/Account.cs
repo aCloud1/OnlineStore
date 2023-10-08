@@ -19,6 +19,7 @@ namespace OnlineStore.Services
             this.email_address = email_address;
             this.password = password;
             this.personal_data = personal_data;
+            this.shopping_cart = new ShoppingCart();
         }
     }
 

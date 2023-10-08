@@ -1,4 +1,12 @@
-﻿@page "/checkout"
+﻿@page "/checkout/{id}"
+
+@using OnlineStore.Services;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
+@inject NavigationManager nav_manager
 
 <h3>PageCheckout</h3>
 
