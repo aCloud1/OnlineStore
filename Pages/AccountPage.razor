@@ -16,37 +16,22 @@
 			<tr>
 				<td>First name</td>
 				<td>@account?.personal_data.first_name</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 			<tr>
 				<td>Second name</td>
 				<td>@account?.personal_data.second_name</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 			<tr>
 				<td>Email address</td>
 				<td>@account?.email_address</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 			<tr>
 				<td>Phone number</td>
 				<td>@account?.personal_data.phone_number</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 			<tr>
 				<td>Password</td>
 				<td>@account?.password</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 
 			<br />
@@ -81,6 +66,16 @@
 				<button @onclick="exportAccountDataAsJSON">JSON</button>
 				<textarea @bind="dataAsFormattedText"></textarea>
 			</div>
+
+			@if(account is Employee e)
+			{
+				<br />
+				<div>
+					<h3>Employee actions</h3>
+					<button @onclick="clearTransactions">Clear my transactions</button>
+				</div>
+			}
+
 		</Authorized>
 
 		<NotAuthorized>
@@ -143,6 +138,13 @@
 	public void exportAccountDataAsJSON()
 	{
 		dataAsFormattedText = account.personal_data.ToString("JSON", null);
+		StateHasChanged();
+	}
+
+	public void clearTransactions()
+	{
+		if (account is Employee e)
+			e.clearTransactions();
 		StateHasChanged();
 	}
 }
