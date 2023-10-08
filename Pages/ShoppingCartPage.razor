@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
 
+@inject IJSRuntime js
 @inject OnlineStore.Services.AccountService account_service
 @inject OnlineStore.Services.Authentication authentication
 @inject NavigationManager nav_manager
@@ -35,15 +36,8 @@
 			</tr>
 		}
 	}
-	<AuthorizeView>
-		<Authorized>
-			<a @onclick="() => goToCheckout()">Go to checkout</a>
-		</Authorized>
-		<NotAuthorized>
-			<a href="/login">Please login first.</a>
-		</NotAuthorized>
-	</AuthorizeView>
 
+	<a @onclick="() => goToCheckout()">Go to checkout</a>
 </div>
 
 
@@ -69,13 +63,19 @@
 		}
 		catch
 		{
-			
+
 		}
 		base.OnInitialized();
 	}
 
-	private void goToCheckout()
+	private async void goToCheckout()
 	{
-		nav_manager.NavigateTo($"/checkout/{account.shopping_cart.id}");
+		if(account == null)
+		{
+			await js.InvokeVoidAsync("alert", "Please login first.");
+			return;
+		}
+
+		nav_manager.NavigateTo($"/checkout");
 	}
 }

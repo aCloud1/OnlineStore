@@ -1,4 +1,4 @@
-﻿@page "/checkout/{id}"
+﻿@page "/checkout"
 
 @using OnlineStore.Services;
 @using Microsoft.AspNetCore.Authorization;
@@ -9,7 +9,49 @@
 @inject NavigationManager nav_manager
 
 <h3>PageCheckout</h3>
+<div>
+	<tr>
+		<td>Item ID</td>
+		<td>Price</td>
+	</tr>
+
+	@if(account != null)
+	{
+		@foreach (var item in account.shopping_cart.items)
+		{
+			<tr>
+				<td>@item.id</td>
+				<td>@item.price</td>
+			</tr>
+		}
+	}
+	
+	<tr>
+		<td>Total</td>
+		<td>@total</td>
+	</tr>
+</div>
+
+
 
 @code {
+	int total;
+	Account? account;
 
+	protected async override Task OnInitializedAsync()
+	{
+		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
+		try
+		{
+			string account_id = auth.User.Identity.Name;
+			account = account_service.getAccountById(account_id);
+			total = CheckoutService.calculateTotal(account.shopping_cart.items);
+		}
+		catch
+		{
+
+		}
+
+		base.OnInitialized();
+	}
 }
