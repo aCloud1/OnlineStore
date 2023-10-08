@@ -8,7 +8,9 @@ namespace OnlineStore.Services
         public string role;
         public string email_address;
         public string password;
+
         public Person personal_data;
+        public ShoppingCart shopping_cart;
 
         public Account(string id, string role, string email_address, string password, Person personal_data)
         {

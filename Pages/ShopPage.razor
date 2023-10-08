@@ -27,11 +27,16 @@
 
 	Shop shop = new Shop();
 
+	// todo:  get from account
+	ShoppingCart shopping_cart = new ShoppingCart();
+
+
 	public async void addToCart(string itemId)
 	{
-		await js.InvokeVoidAsync("alert", $"Item #{itemId} added to cart!");
+		// get item from the shop
+		// and
+		shopping_cart.addItem(itemId);
 
-		// get item by id
-		shop.shopping_cart.addItem(itemId);
+		await js.InvokeVoidAsync("alert", $"Item #{itemId} added to cart!");
 	}
 }

@@ -1,0 +1,52 @@
+﻿@page "/shoppingcart"
+
+@using OnlineStore.Services;
+
+<h3>Items in your shopping cart:</h3>
+
+<div>
+	@foreach (var item in shopping_cart.items)
+	{
+		<tr>
+			<td>@item.id</td>
+			<td>@item.price</td>
+		</tr>
+	}
+
+</div>
+
+
+<a href="/checkout">Checkout</a>
+
+@code {
+	[Parameter]
+	public string id { get; set; }
+
+	ShoppingCart shopping_cart = new ShoppingCart();
+
+	protected override void OnParametersSet()
+	{
+		shopping_cart = new ShoppingCart();
+				/*
+				if logged in
+				   get shopping cart if account has one, else create
+				else
+					create shopping cart, add items to it, hold it until user logs in or registers and then assign the shopping cart to him
+
+			*/
+		/*
+		try
+		{
+			shopping_cart = account_service.getAccountById(user_id);
+			if (account != null)
+				user_input.email_address = account.email_address;
+		}
+		catch (Exception e)
+		{
+			Logger.log($"{e.Message}. Prefilling email address field is skipped.");
+		}
+		*/
+	}
+
+
+}
