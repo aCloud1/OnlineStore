@@ -1,10 +1,12 @@
 ﻿namespace OnlineStore.Services
 {
-	public class StockManager
+	public sealed class StockManager
 	{
+		private static StockManager instance = null;
 		public List<Item> items { get; set; }
 		public Dictionary<string, int> stock { get; set; }
-		public StockManager()
+		
+		private StockManager()
 		{
 			items = new List<Item>
 			{
@@ -20,6 +22,13 @@
 			{
 				stock.Add(item.id, 5);
 			}
+		}
+
+		public static StockManager Instance()
+		{
+			if(instance == null)
+				instance = new StockManager();
+			return instance;
 		}
 
 		public Item getItemById(string id)

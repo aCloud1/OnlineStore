@@ -8,7 +8,7 @@
         public Shop()
         {
             name = "Shop1";
-            stock_manager = new StockManager();
+            stock_manager = StockManager.Instance();
         }
 
         public Item getItemById(string itemId)
