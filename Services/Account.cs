@@ -8,7 +8,10 @@ namespace OnlineStore.Services
         public string role;
         public string email_address;
         public string password;
+
         public Person personal_data;
+        public ShoppingCart shopping_cart;
+        public List<Transaction> transactions;
 
         public Account(string id, string role, string email_address, string password, Person personal_data)
         {
@@ -17,6 +20,8 @@ namespace OnlineStore.Services
             this.email_address = email_address;
             this.password = password;
             this.personal_data = personal_data;
+            this.shopping_cart = new ShoppingCart();
+            this.transactions = new List<Transaction>();
         }
     }
 

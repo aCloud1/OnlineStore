@@ -1,0 +1,65 @@
+﻿@page "/shoppingcart"
+
+@using OnlineStore.Services;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IJSRuntime js
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
+@inject NavigationManager nav_manager
+
+<h3>Shopping cart</h3>
+<div>
+	@if(account == null)
+	{
+		<p>You must be <a href="/login/user">logged in</a>.</p>
+	}
+	else
+	{
+		if(account.shopping_cart.items.Count == 0)
+		{
+			<p>Shopping cart is empty!</p>
+		}
+		else
+		{
+			<tr>
+				<td>Item ID</td>
+				<td>Price</td>
+			</tr>
+			@foreach (var item in account.shopping_cart.items)
+			{
+				<tr>
+					<td>@item.id</td>
+					<td>@item.price</td>
+				</tr>
+			}
+			<button @onclick="() => goToCheckout()">Go to checkout</button>
+		}
+	}
+</div>
+
+
+@code {
+	Account? account;
+
+	protected async override Task OnInitializedAsync()
+	{
+		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
+		try
+		{
+			string account_id = auth.User.Identity.Name;
+			account = account_service.getAccountById(account_id);
+		}
+		catch
+		{
+			Logger.log($"ShoppingCartPage: account not found.");
+		}
+		base.OnInitialized();
+	}
+
+	private async void goToCheckout()
+	{
+		nav_manager.NavigateTo($"/checkout");
+	}
+}

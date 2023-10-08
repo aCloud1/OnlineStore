@@ -2,15 +2,18 @@
 {
     public class Shop
     {
+        public string name;
         public StockManager stock_manager;
-        public ShoppingCart shopping_cart;
 
         public Shop()
         {
+            name = "Shop1";
             stock_manager = new StockManager();
-            shopping_cart = new ShoppingCart(stock_manager);
         }
 
-        public ShoppingCart getShoppingCart() { return shopping_cart; }
+        public Item getItemById(string itemId)
+        {
+            return stock_manager.getItemById(itemId);
+        }
     }
 }

@@ -1,0 +1,63 @@
+﻿@page "/shop"
+
+@using OnlineStore.Services;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IJSRuntime js
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
+
+<h3>Shop</h3>
+
+<div class="item_list_wrapper">
+	<div class="item_list">
+		@foreach (var s in shop.stock_manager.items_in_stock)
+		{
+			<div class="item_wrapper">
+				<div class="item_image" @onclick="() => addToCart(s.id)">
+					<p>@s.id</p>
+				</div>
+				<div class="item_price">
+					<p class="item_price_p">@s.price</p>
+				</div>
+			</div>
+		}
+	</div>
+
+</div>
+
+@code {
+	Account? account;
+	Shop shop = new Shop();
+
+	protected async override Task OnInitializedAsync()
+	{
+		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
+		try
+		{
+			string account_id = auth.User.Identity.Name;
+			account = account_service.getAccountById(account_id);
+		}
+		catch(Exception e)
+		{
+			Logger.log("Adding items to anonymous cart.");
+		}
+		base.OnInitialized();
+	}
+
+	public async void addToCart(string itemId)
+	{
+		// todo: handle exceptions
+		Item item = shop.getItemById(itemId);
+
+		if(account == null)
+		{
+			await js.InvokeVoidAsync("alert", "You must be logged in!");
+			return;
+		}
+
+		account.shopping_cart.addItem(item);
+		await js.InvokeVoidAsync("alert", $"Item #{itemId} added to cart!");
+	}
+}

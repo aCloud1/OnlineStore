@@ -1,0 +1,79 @@
+﻿@page "/checkout"
+
+@using OnlineStore.Services;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IJSRuntime js
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
+@inject NavigationManager nav_manager
+
+<h3>PageCheckout</h3>
+<div>
+	@if(account == null)
+	{
+		<p>Loading...</p>
+	}
+	else
+	{
+		<tr>
+			<td>Item ID</td>
+			<td>Price</td>
+		</tr>
+		@foreach (var item in account.shopping_cart.items)
+		{
+			<tr>
+				<td>@item.id</td>
+				<td>@item.price</td>
+			</tr>
+		}
+
+		<tr>
+			<td>Total</td>
+			<td>@total</td>
+		</tr>
+		<button @onclick="completeOrder">Complete order</button>
+	}
+</div>
+
+
+
+@code {
+	int total;
+	Account? account;
+
+	protected async override Task OnInitializedAsync()
+	{
+		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
+		try
+		{
+			string account_id = auth.User.Identity.Name;
+			account = account_service.getAccountById(account_id);
+			total = CheckoutService.calculateTotal(account.shopping_cart.items);
+		}
+		catch 
+		{
+			Logger.log($"CheckoutPage: account not found.");
+		}
+		base.OnInitialized();
+	}
+
+	private async void completeOrder()
+	{
+		if(account.shopping_cart.items.Count() == 0)
+		{
+			await js.InvokeVoidAsync("alert", "Your shopping cart is empty!");
+			return;
+		}
+		else
+		{
+			var transaction = CheckoutService.createTransaction(account.id, total);
+			account.transactions.Add(transaction);
+			account.shopping_cart.clear();
+			await js.InvokeVoidAsync("alert", "Order completed!");
+
+			nav_manager.NavigateTo("/");
+		}
+	}
+}
