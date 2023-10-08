@@ -1,14 +1,54 @@
 ﻿@page "/account"
 
+@using OnlineStore.Services;
 @using Microsoft.AspNetCore.Authorization;
-@using OnlineStore;
 @using Microsoft.AspNetCore.Components.Authorization
+
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
+@inject NavigationManager nav_manager
 
 <h3>AccountPage</h3>
 <div>
 	<AuthorizeView>
 		<Authorized>
 			<p>Hello, this is your account page</p>
+
+			<tr>
+				<td>First name</td>
+				<td>@account?.personal_data.first_name</td>
+				<td class="td_button">
+					<button>Change</button>
+				</td>
+			</tr>
+			<tr>
+				<td>Second name</td>
+				<td>@account?.personal_data.second_name</td>
+				<td class="td_button">
+					<button>Change</button>
+				</td>
+			</tr>
+			<tr>
+				<td>Email address</td>
+				<td>@account?.email_address</td>
+				<td class="td_button">
+					<button>Change</button>
+				</td>
+			</tr>
+			<tr>
+				<td>Phone number</td>
+				<td>@account?.personal_data.phone_number</td>
+				<td class="td_button">
+					<button>Change</button>
+				</td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td>@account?.password</td>
+				<td class="td_button">
+					<button>Change</button>
+				</td>
+			</tr>
 		</Authorized>
 
 		<NotAuthorized>
@@ -19,5 +59,32 @@
 
 
 @code {
+	Account? account;
 
+	protected async override Task OnInitializedAsync()
+	{
+		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
+
+		string? account_id = auth.User.Identity.Name;
+		if (account_id == null)
+		{
+			nav_manager.NavigateTo("/login");
+		}
+
+		try
+		{
+			account = account_service.getAccountById(account_id);
+		}
+		catch
+		{
+			
+		}
+
+		if (account == null)
+		{
+			nav_manager.NavigateTo("/login");
+		}
+
+		base.OnInitialized();
+	}
 }

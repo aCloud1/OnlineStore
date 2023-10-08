@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/login/{user_id}"
 
 @using OnlineStore.Services;
 @using Microsoft.AspNetCore.Components.Authorization
@@ -17,7 +17,7 @@
 		<NotAuthorized>
 			<div>
 				<label>Email</label>
-				<input @bind="user_input.email_address" />
+				<input @bind="user_input.email_address"/>
 				<label>Password</label>
 				<input @bind="user_input.password" type="password" />
 			</div>
@@ -33,6 +33,10 @@
 
 @code
 {
+	[Parameter]
+	public string user_id { get; set; }
+
+
 	class UserInput
 	{
 		public string email_address { get; set; }
@@ -40,19 +44,40 @@
 	}
 
 	UserInput user_input = new UserInput();
+	Account? account;
+
+	protected override void OnParametersSet()
+	{
+		try
+		{
+			account = account_service.getAccountById(user_id);
+			if (account != null)
+				user_input.email_address = account.email_address;
+		}
+		catch(Exception e)
+		{
+			Logger.log($"{e.Message}. Prefilling email address field is skipped.");
+		}
+	}
 
 	private async Task authenticate()
 	{
-		var account = account_service.getAccountByEmail(user_input.email_address);
-		if (account == null || user_input.password != account.password)
+		try
 		{
+			if(account is null)
+				account = account_service.getAccountByEmail(user_input.email_address);
+			account_service.matchPasswords(account, user_input.password);
+		}
+		catch (Exception e)
+		{
+			Logger.log($"{e.Message}.");
 			await js.InvokeVoidAsync("alert", "Email or password is invalid.");
 			return;
 		}
 
 		await authentication.updateAuthenticationState(new UserSession
 			{
-				email_address = account.email_address,
+				id = account.id,
 				role = account.role
 			});
 		nav_manager.NavigateTo("/", true);
