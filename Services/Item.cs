@@ -4,7 +4,7 @@
     {
         public string id { get; set; }
         public string name { get; set; }
-        public int price { get; set; }
+        public double price { get; set; }
         public ItemCategory category { get; set; }
 
         public Item(string id, int price, string name = "", ItemCategory category = ItemCategory.UNCATEGORIZED)

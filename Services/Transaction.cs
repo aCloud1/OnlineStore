@@ -7,7 +7,7 @@ namespace OnlineStore.Services
 		public string id;
 		public string account_id;
 		public double total;
-		public DateOnly date;
+		public DateOnly date;	// todo: move to DateTime
 
 
 		public Transaction()
