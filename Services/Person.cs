@@ -17,6 +17,11 @@
 			this.phone_number = phone_number;
 		}
 
+		public string getFullName()
+		{
+			return first_name + " " + second_name;
+		}
+
 		public string ToString(string? format, IFormatProvider? formatProvider)
 		{
 			string buffer = "";
