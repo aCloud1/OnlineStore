@@ -38,16 +38,5 @@
 		{
 			items.Clear();
 		}
-
-
-		// todo: move to appropriate class
-		public int calculateTotal()
-		{
-			int total = 0;
-			foreach (var item in items)
-				total += item.price;
-
-			return total;
-		}
 	}
 }

@@ -26,14 +26,14 @@ namespace OnlineStore.Services
     }
 
 
-    public class Customer : Account
+    public sealed class Customer : Account
     {
         public Customer(string id, string email_address, string password, Person personal_data)
             : base(id, ROLES.User, email_address, password, personal_data) { }
     }
 
 
-    public class Employee : Account, EmployeeActions
+    public sealed class Employee : Account, EmployeeActions
     {
         public Employee(string id, string email_address, string password, Person personal_data)
             : base(id, ROLES.Admin, email_address, password, personal_data) { }
@@ -42,12 +42,18 @@ namespace OnlineStore.Services
         {
             this.transactions.Clear();
         }
+
+        public void changeOrderStatus(Order order, OrderStatus status)
+        {
+            order.status = status;
+        }
     }
 
 
 	public interface EmployeeActions
 	{
 		public void clearTransactions();
+        public void changeOrderStatus(Order order, OrderStatus status);
 	}
 
 }

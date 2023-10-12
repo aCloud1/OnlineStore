@@ -1,21 +1,16 @@
 ﻿@page "/"
 
 @inject IJSRuntime js
+@inject OnlineStore.Services.AccountService account_service
 
+@using OnlineStore.Services;
 @using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Home</PageTitle>
 
-<header>
-	<div>
-		<p>this is a header</p>
-	</div>
-</header>
-
 <AuthorizeView>
 	<Authorized>
-		<h1>Welcome, @context.User.Identity.Name.</h1>
-		<button @onclick="displayGreeting">Display greeting alert</button>
+		<h1>Welcome, @user_name.</h1>
 	</Authorized>
 
 	<NotAuthorized>
@@ -28,15 +23,18 @@
 {
 	[CascadingParameter]
 	private Task<AuthenticationState> authentication_state { get; set; }
+	private string user_name;
 
-	// todo: display account owner's name, not account id !!!
-
-	private async Task displayGreeting()
+	protected override async Task OnInitializedAsync()
 	{
 		var auth_state = await authentication_state;
-		var message = $"Hello {auth_state.User.Identity.Name}";
-		await js.InvokeVoidAsync("alert", message);
-	}
+		string account_id = auth_state.User.Identity.Name;
+		if (account_id is null)
+			return;
 
+		Account account = account_service.getAccountById(account_id);
+		user_name = account.personal_data.getFullName();
+		base.OnInitialized();
+	}
 
 }

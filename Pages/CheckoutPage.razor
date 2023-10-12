@@ -50,7 +50,11 @@
 		{
 			string account_id = auth.User.Identity.Name;
 			account = account_service.getAccountById(account_id);
-			total = CheckoutService.calculateTotal(account.shopping_cart.items);
+			total = CheckoutService.calculateTotal(
+				account.shopping_cart.items
+				.Select(item => item.price)
+				.ToArray()
+			);
 		}
 		catch 
 		{
