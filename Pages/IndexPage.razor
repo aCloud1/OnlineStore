@@ -15,17 +15,12 @@
 <AuthorizeView>
 	<Authorized>
 		<h1>Welcome, @context.User.Identity.Name.</h1>
+		<button @onclick="displayGreeting">Display greeting alert</button>
 	</Authorized>
 
 	<NotAuthorized>
 		<h1>Welcome, Guest.</h1>
 	</NotAuthorized>
-</AuthorizeView>
-
-<AuthorizeView>
-	<Authorized>
-		<button @onclick="displayGreeting">Display greeting alert</button>
-	</Authorized>
 </AuthorizeView>
 
 

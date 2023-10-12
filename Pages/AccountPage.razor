@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
 
+@inject IJSRuntime js
 @inject OnlineStore.Services.AccountService account_service
 @inject OnlineStore.Services.Authentication authentication
 @inject NavigationManager nav_manager
@@ -15,39 +16,25 @@
 			<tr>
 				<td>First name</td>
 				<td>@account?.personal_data.first_name</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 			<tr>
 				<td>Second name</td>
 				<td>@account?.personal_data.second_name</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 			<tr>
 				<td>Email address</td>
 				<td>@account?.email_address</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 			<tr>
 				<td>Phone number</td>
 				<td>@account?.personal_data.phone_number</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 			<tr>
 				<td>Password</td>
 				<td>@account?.password</td>
-				<td class="td_button">
-					<button>Change</button>
-				</td>
 			</tr>
 
+			<br />
 			<h3>Your transactions</h3>
 			@if(account == null || account.transactions.Count == 0)
 			{
@@ -68,7 +55,27 @@
 						<td>@t.total</td>
 					</tr>
 				}
+				<button @onclick="sortTransactionsAsc">Sort ^</button>
+				<button @onclick="sortTransactionsDesc">Sort v</button>
 			}
+
+			<br />
+			<div>
+				<h3>Export my personal data as:</h3>
+				<button @onclick="exportAccountDataAsText">Text</button>
+				<button @onclick="exportAccountDataAsJSON">JSON</button>
+				<textarea @bind="dataAsFormattedText"></textarea>
+			</div>
+
+			@if(account is Employee e)
+			{
+				<br />
+				<div>
+					<h3>Employee actions</h3>
+					<button @onclick="clearTransactions">Clear my transactions</button>
+				</div>
+			}
+
 		</Authorized>
 
 		<NotAuthorized>
@@ -80,6 +87,8 @@
 
 @code {
 	Account? account;
+
+	string dataAsFormattedText = "";
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -97,7 +106,7 @@
 		}
 		catch
 		{
-			
+
 		}
 
 		if (account == null)
@@ -106,5 +115,36 @@
 		}
 
 		base.OnInitialized();
+	}
+
+	public void sortTransactionsAsc()
+	{
+		account.transactions.Sort((a, b) => b.CompareTo(a));
+		StateHasChanged();
+	}
+
+	public void sortTransactionsDesc()
+	{
+		account.transactions.Sort();
+		StateHasChanged();
+	}
+
+	public void exportAccountDataAsText()
+	{
+		dataAsFormattedText = account.personal_data.ToString("Text", null);
+		StateHasChanged();
+	}
+
+	public void exportAccountDataAsJSON()
+	{
+		dataAsFormattedText = account.personal_data.ToString("JSON", null);
+		StateHasChanged();
+	}
+
+	public void clearTransactions()
+	{
+		if (account is Employee e)
+			e.clearTransactions();
+		StateHasChanged();
 	}
 }
