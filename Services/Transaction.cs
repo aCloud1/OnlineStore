@@ -6,7 +6,7 @@ namespace OnlineStore.Services
 	{
 		public string id;
 		public string account_id;
-		public int total;
+		public double total;
 		public DateOnly date;
 
 
@@ -15,7 +15,7 @@ namespace OnlineStore.Services
 			this.id = Id.generate();
 		}
 
-		public Transaction(string account_id, int total)
+		public Transaction(string account_id, double total)
 		{
 			this.id = Id.generate();
 			this.account_id = account_id;

@@ -11,12 +11,29 @@
 <h3>Shop</h3>
 
 <div class="item_list_wrapper">
+	<div class="filtering">
+		<select @bind="filter_by">
+			<option value="@ItemFieldNames.NAME">Name</option>
+			<option value="@ItemFieldNames.PRICE">Price</option>
+		</select>
+		<select @bind="category">
+			<option value="@ItemCategory.NO_CATEGORY">All categories</option>
+			<option value="@ItemCategory.CLOTHING">Clothing</option>
+			<option value="@ItemCategory.FOOD">Food</option>
+			<option value="@ItemCategory.TOOLS">Tools</option>
+			<option value="@ItemCategory.UNCATEGORIZED">Uncategorized</option>
+		</select>
+		<input @bind="filter_text_input" />
+		<button @onclick="filterItems">Filter</button>
+	</div>
 	<div class="item_list">
-		@foreach (var s in shop.stock_manager.items)
+		@foreach (var s in shop.items_in_display)
 		{
 			<div class="item_wrapper">
 				<div class="item_image" @onclick="() => addToCart(s.id)">
+					<p>Category: @s.category</p>
 					<p>@s.id</p>
+					<p>@s.name</p>
 				</div>
 				<div class="item_price">
 					<p class="item_price_p">@s.price</p>
@@ -30,6 +47,17 @@
 @code {
 	Account? account;
 	Shop shop = new Shop();
+
+	ItemFieldNames filter_by;
+	ItemCategory category;
+	String filter_text_input;
+
+	public static class Filter
+	{
+		public static string name;
+		public static int price;
+		public static ItemCategory category;
+	}
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -65,5 +93,38 @@
 		{
 			await js.InvokeVoidAsync("alert", $"{e.Message}.");	
 		}
+	}
+
+	public async void filterItems()
+	{
+		List<Item> filtered_items = new List<Item>(shop.stock_manager.items);
+		if(category != ItemCategory.NO_CATEGORY)
+			filtered_items = filtered_items.FindAll(item => item.category == category);
+
+		if (filter_text_input is not null)
+		{
+			switch (filter_by)
+			{
+				case ItemFieldNames.NAME:
+					// case sensitive!
+					filtered_items = filtered_items.FindAll(item => item.name.Contains(filter_text_input));
+					break;
+
+				case ItemFieldNames.PRICE:
+					double pr;
+					if (Double.TryParse(filter_text_input, out pr))
+						filtered_items = filtered_items.FindAll(item => item.price >= pr);
+					else
+						await js.InvokeVoidAsync("alert", $"{filter_text_input} is not a number.");
+					break;
+
+				default:
+					filtered_items = new List<Item>(filtered_items);
+					break;
+			}
+		}
+
+		shop.items_in_display = filtered_items;
+		StateHasChanged();
 	}
 }

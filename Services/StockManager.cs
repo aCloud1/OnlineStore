@@ -10,10 +10,18 @@
 		{
 			items = new List<Item>
 			{
-				new Item("01", 20),
-				new Item("02", 10),
-				new Item("03", 45),
-				new Item("04", 80)
+				new Item("01", 20, "Hat1", ItemCategory.CLOTHING),
+				new Item("02", 20, "Hat2", ItemCategory.CLOTHING),
+				new Item("03", 60, "Jacket", ItemCategory.CLOTHING),
+				new Item("04", 80, "Winter Coat", ItemCategory.CLOTHING),
+				new Item("05", 20, "Hammer", ItemCategory.TOOLS),
+				new Item("06", 25, "Drill", ItemCategory.TOOLS),
+				new Item("07", 40, "Shovel", ItemCategory.TOOLS),
+				new Item("08", 2, "Apple", ItemCategory.FOOD),
+				new Item("09", 18, "Apple Pie", ItemCategory.FOOD),
+				new Item("10", 20, "Pizza", ItemCategory.FOOD),
+				new Item("11", 8, "Bread", ItemCategory.FOOD),
+				new Item("12", 100, "Generic Item", ItemCategory.UNCATEGORIZED)
 			};
 
 			stock = new Dictionary<string, int>();
