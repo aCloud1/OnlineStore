@@ -46,8 +46,10 @@ namespace OnlineStore.Services
 			account_validator.validateEmailAddress(email_address);
 			account_validator.validatePassword(password);
 
-			string id = Id.generate();
-            Account account = new Customer(id, email_address, password, personal_data);
+            if (personal_data.id == null)
+                personal_data.id = Id.generate();
+
+            Account account = new Customer(Id.generate(), email_address, password, personal_data);
             accounts.Add(account);
             return account;
         }

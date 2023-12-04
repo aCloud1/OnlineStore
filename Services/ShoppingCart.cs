@@ -1,9 +1,14 @@
-﻿namespace OnlineStore.Services
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace OnlineStore.Services
 {
 	public class ShoppingCart
 	{
-		public string id;
-		public List<Item> items;
+		[Key, ForeignKey("account")]
+		public string id { get; set; }
+		public Account account { get; set; }
+		public List<Item> items { get; set; }
 
 		public ShoppingCart()
 		{

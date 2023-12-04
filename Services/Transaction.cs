@@ -4,21 +4,21 @@ namespace OnlineStore.Services
 {
 	public class Transaction : IComparable<Transaction>, IEquatable<Transaction>
 	{
-		public string id;
-		public string account_id;
-		public double total;
-		public DateOnly date;	// todo: move to DateTime
-
+		public string id { get; set; }
+		public Account account { get; set; }
+		public Order order { get; set; }
+		public double total { get; set; }
+		public DateOnly date { get; set; }  // todo: move to DateTime
 
 		public Transaction()
 		{
 			this.id = Id.generate();
 		}
 
-		public Transaction(string account_id, double total)
+		public Transaction(Account account, double total)
 		{
 			this.id = Id.generate();
-			this.account_id = account_id;
+			this.account = account;
 			this.total = total;
 			this.date = DateOnly.FromDateTime(DateTime.UtcNow);
 		}

@@ -2,10 +2,11 @@
 {
 	public class Person : IFormattable
 	{
-		public string first_name;
-		public string second_name;
-		public string home_address;
-		public string phone_number;
+		public string id { get; set; }
+		public string first_name { get; set; }
+		public string second_name { get; set; }
+		public string home_address { get; set; }
+		public string phone_number { get; set; }
 
 		public Person() { }
 

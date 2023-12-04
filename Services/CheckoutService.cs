@@ -24,15 +24,15 @@
 			return total * tax_rate;
 		}
 
-		public static Transaction createTransaction(string account_id, double total)
+		public static Transaction createTransaction(Account account, double total)
 		{
-			return new Transaction(account_id, total);
+			return new Transaction(account, total);
 		}
 
-		public static Transaction createTransaction(string account_id, params double[] prices)
+		public static Transaction createTransaction(Account account, params double[] prices)
 		{
 			return new Transaction(
-				account_id,
+				account,
 				prices.Sum()
 			);
 		}

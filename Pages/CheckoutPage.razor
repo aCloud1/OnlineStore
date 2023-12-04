@@ -21,7 +21,7 @@
 			<td>Item ID</td>
 			<td>Price</td>
 		</tr>
-		@foreach (var item in account.shopping_cart.items)
+		@foreach (var item in account.temporary_cart.items)
 		{
 			<tr>
 				<td>@item.id</td>
@@ -51,7 +51,7 @@
 			string account_id = auth.User.Identity.Name;
 			account = account_service.getAccountById(account_id);
 			total = CheckoutService.calculateTotal(
-				account.shopping_cart.items
+				account.temporary_cart.items
 				.Select(item => item.price)
 				.ToArray()
 			);
@@ -65,16 +65,16 @@
 
 	private async void completeOrder()
 	{
-		if(account.shopping_cart.items.Count() == 0)
+		if (account.temporary_cart.items.Count() == 0)
 		{
 			await js.InvokeVoidAsync("alert", "Your shopping cart is empty!");
 			return;
 		}
 		else
 		{
-			var transaction = CheckoutService.createTransaction(account.id, total);
+			var transaction = CheckoutService.createTransaction(account, total);
 			account.transactions.Add(transaction);
-			account.shopping_cart.clear();
+			account.temporary_cart.clear();
 			await js.InvokeVoidAsync("alert", "Order completed!");
 
 			nav_manager.NavigateTo("/");

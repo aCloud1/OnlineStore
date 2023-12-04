@@ -1,20 +1,18 @@
 ﻿namespace OnlineStore.Services
 {
-    public class Order
+    public class Order  // todo: not yet used
     {
-        public string id;
-        public OrderStatus status;
-        public Transaction transaction;
+        public string id { get; set; }
+		public OrderStatus status { get; set; }
+		public ShoppingCart shopping_cart { get; set; }
 
-        public Order(Transaction transaction, OrderStatus status = OrderStatus.NOT_STARTED)
+		public Order(ShoppingCart shopping_cart, OrderStatus status = OrderStatus.NOT_STARTED)
         {
             this.id = Id.generate();
-            this.status = status;
-            this.transaction = transaction;
+            this.shopping_cart = shopping_cart;
+			this.status = status;
         }
     }
-
-
 
     public enum OrderStatus
     {

@@ -4,9 +4,9 @@ namespace OnlineStore.Services
 {
 	public class Shop
 	{
-		public string id;
-		public string name;
-		public List<Item> items;
+		public string id { get; set; }
+		public string name { get; set; }
+		public List<Item> items { get; set; }
 
 		public Shop()
 		{

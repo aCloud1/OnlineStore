@@ -4,14 +4,14 @@ namespace OnlineStore.Services
 {
     public abstract class Account
     {
-        public string id;
-        public string role;
-        public string email_address;
-        public string password;
+        public string id { get; set; }
+        public string role { get; set; }
+		public string email_address { get; set; }
+		public string password { get; set; }
 
-        public Person personal_data;
-        public ShoppingCart shopping_cart;
-        public List<Transaction> transactions;
+		public Person personal_data { get; set; }
+		public ShoppingCart temporary_cart { get; set; }
+        public List<Transaction> transactions { get; set; }
 
         public Account(string id, string role, string email_address, string password, Person personal_data)
         {
@@ -20,7 +20,7 @@ namespace OnlineStore.Services
             this.email_address = email_address;
             this.password = password;
             this.personal_data = personal_data;
-            this.shopping_cart = new ShoppingCart();
+            this.temporary_cart = new ShoppingCart();
             this.transactions = new List<Transaction>();
         }
     }

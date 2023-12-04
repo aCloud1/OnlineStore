@@ -17,7 +17,7 @@
 	}
 	else
 	{
-		if(account.shopping_cart.items.Count == 0)
+		if (account.temporary_cart.items.Count == 0)
 		{
 			<p>Shopping cart is empty!</p>
 		}
@@ -27,7 +27,7 @@
 				<td>Item ID</td>
 				<td>Price</td>
 			</tr>
-			@foreach (var item in account.shopping_cart.items)
+			@foreach (var item in account.temporary_cart.items)
 			{
 				<tr>
 					<td>@item.id</td>
