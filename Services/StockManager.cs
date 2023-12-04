@@ -1,6 +1,6 @@
 ﻿namespace OnlineStore.Services
 {
-	public sealed class StockManager
+	public sealed class StockManager			// not used
 	{
 		private static StockManager instance = null;
 		public List<Item> items { get; set; }

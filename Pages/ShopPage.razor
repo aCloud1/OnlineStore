@@ -12,6 +12,13 @@
 
 <div class="item_list_wrapper">
 	<div class="filtering">
+		<select @bind="select_shop_id">
+		@foreach (var s in shop_ids)
+		{
+			<option value="@s.Value[0]">@s.Value[1]</option>
+		}
+		</select>
+
 		<select @bind="filter_by">
 			<option value="@ItemFieldNames.NAME">Name</option>
 			<option value="@ItemFieldNames.PRICE">Price</option>
@@ -27,7 +34,7 @@
 		<button @onclick="filterItems">Filter</button>
 	</div>
 	<div class="item_list">
-		@foreach (var s in shop.items_in_display)
+		@foreach (var s in items_in_display)
 		{
 			<div class="item_wrapper">
 				<div class="item_image" @onclick="() => addToCart(s.id)">
@@ -46,11 +53,14 @@
 
 @code {
 	Account? account;
-	Shop shop = new Shop();
+	Shop shop;
 
+	string select_shop_id;
+	Dictionary<string, string> shop_ids;
 	ItemFieldNames filter_by;
 	ItemCategory category;
 	String filter_text_input;
+	List<Item> items_in_display;
 
 	public static class Filter
 	{
@@ -61,13 +71,39 @@
 
 	protected async override Task OnInitializedAsync()
 	{
+		//shop_ids = queryShops
+		shop_ids = new Dictionary<string, string>();
+		shop_ids.Add("1", "1111");
+		shop_ids.Add("2", "2222");
+		shop_ids.Add("3", "3333");
+		shop_ids.Add("4", "4444");
+
+		// todo: get the shop by ID and populate the page with its items
+		shop = new Shop();
+		shop.items = new List<Item>	// placeholder
+			{
+				new Item("01", 20, "Hat1", ItemCategory.CLOTHING),
+				new Item("02", 20, "Hat2", ItemCategory.CLOTHING),
+				new Item("03", 60, "Jacket", ItemCategory.CLOTHING),
+				new Item("04", 80, "Winter Coat", ItemCategory.CLOTHING),
+				new Item("05", 20, "Hammer", ItemCategory.TOOLS),
+				new Item("06", 25, "Drill", ItemCategory.TOOLS),
+				new Item("07", 40, "Shovel", ItemCategory.TOOLS),
+				new Item("08", 2, "Apple", ItemCategory.FOOD),
+				new Item("09", 18, "Apple Pie", ItemCategory.FOOD),
+				new Item("10", 20, "Pizza", ItemCategory.FOOD),
+				new Item("11", 8, "Bread", ItemCategory.FOOD),
+				new Item("12", 100, "Generic Item", ItemCategory.UNCATEGORIZED)
+			};
+		items_in_display = shop.items;
+
 		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
 		try
 		{
 			string account_id = auth.User.Identity.Name;
 			account = account_service.getAccountById(account_id);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			Logger.log("Adding items to anonymous cart.");
 		}
@@ -97,7 +133,9 @@
 
 	public async void filterItems()
 	{
-		List<Item> filtered_items = new List<Item>(shop.stock_manager.items);
+		// todo: add filtering by shop id
+
+		List<Item> filtered_items = shop.items;
 		if(category != ItemCategory.NO_CATEGORY)
 			filtered_items = filtered_items.FindAll(item => item.category == category);
 
@@ -124,7 +162,7 @@
 			}
 		}
 
-		shop.items_in_display = filtered_items;
+		items_in_display = filtered_items;
 		StateHasChanged();
 	}
 }
