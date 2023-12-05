@@ -8,6 +8,8 @@
 		
 		private StockManager()
 		{
+			items = new List<Item>();
+			/*
 			items = new List<Item>
 			{
 				new Item("01", 20, "Hat1", ItemCategory.CLOTHING),
@@ -23,7 +25,7 @@
 				new Item("11", 8, "Bread", ItemCategory.FOOD),
 				new Item("12", 100, "Generic Item", ItemCategory.UNCATEGORIZED)
 			};
-
+			*/
 			stock = new Dictionary<string, int>();
 
 			foreach(var item in items)
