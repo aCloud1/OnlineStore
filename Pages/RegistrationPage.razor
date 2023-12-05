@@ -92,13 +92,11 @@
 			await js.InvokeVoidAsync("alert", "Success!");
 			await authentication.updateAuthenticationState(new UserSession(new_account.id, new_account.role));
 
-			// tofix:  here some `id` is missing - exception is thrown
 			using (var db = new DatabaseContext()) try {
 					db.accounts.Add(new_account);
 					db.SaveChanges();
 				}catch(Exception e)
 				{
-					//string errorMessages = string.Join("; ", ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.PropertyName + ": " + x.ErrorMessage));
 					await js.InvokeVoidAsync("alert", $"{e.Message}.");
 				}
 

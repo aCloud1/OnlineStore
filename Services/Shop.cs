@@ -12,6 +12,11 @@ namespace OnlineStore.Services
 		{
 			name = "Shop1";
 		}
+		public Shop(string name, List<Item> items)
+		{
+			this.name = name;
+			this.items = items;
+		}
 
 		public Item getItemById(string id)
 		{

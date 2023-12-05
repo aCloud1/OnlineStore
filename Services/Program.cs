@@ -10,6 +10,7 @@ builder.Services.AddAuthenticationCore();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<AccountService>();
+builder.Services.AddSingleton<ShopService>();
 builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddScoped<Authentication>();
 builder.Services.AddScoped<AuthenticationStateProvider, Authentication>();

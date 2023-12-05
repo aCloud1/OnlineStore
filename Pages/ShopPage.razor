@@ -1,5 +1,6 @@
 ﻿@page "/shop"
 
+@using OnlineStore.Database;
 @using OnlineStore.Services;
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
@@ -7,6 +8,7 @@
 @inject IJSRuntime js
 @inject OnlineStore.Services.AccountService account_service
 @inject OnlineStore.Services.Authentication authentication
+@inject OnlineStore.Services.ShopService shop_service
 
 <h3>Shop</h3>
 
@@ -15,7 +17,7 @@
 		<select @bind="select_shop_id">
 		@foreach (var s in shop_ids)
 		{
-			<option value="@s.Value[0]">@s.Value[1]</option>
+			<option value="@s.Key">@s.Value</option>
 		}
 		</select>
 
@@ -54,6 +56,7 @@
 @code {
 	Account? account;
 	Shop shop;
+	List<Shop> shops;
 
 	string select_shop_id;
 	Dictionary<string, string> shop_ids;
@@ -71,14 +74,12 @@
 
 	protected async override Task OnInitializedAsync()
 	{
-		//shop_ids = queryShops
+		shops = shop_service.listShops();
 		shop_ids = new Dictionary<string, string>();
-		shop_ids.Add("1", "1111");
-		shop_ids.Add("2", "2222");
-		shop_ids.Add("3", "3333");
-		shop_ids.Add("4", "4444");
+		foreach (var s in shops)
+			shop_ids.Add(s.id, s.name);
 
-		// todo: get the shop by ID and populate the page with its items
+		// todo: delete this
 		shop = new Shop();
 		shop.items = new List<Item>	// placeholder
 			{
@@ -133,6 +134,13 @@
 
 	public async void filterItems()
 	{
+		foreach (var s in shop_ids)
+		{
+			await js.InvokeVoidAsync("console.log", s.Key);
+			await js.InvokeVoidAsync("console.log", s.Value[1]);
+			await js.InvokeVoidAsync("console.log", "");
+		}
+
 		// todo: add filtering by shop id
 
 		List<Item> filtered_items = shop.items;

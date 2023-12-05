@@ -10,7 +10,8 @@ namespace OnlineStore.Database
 		public DbSet<Item> items { get; set; }
 		public DbSet<Order> orders { get; set; }
 		public DbSet<Shop> shops { get; set; }
-		public DbSet<ShoppingCart> shopping_cars { get; set; }
+		public DbSet<ShoppingCart> shopping_carts { get; set; }
 		public DbSet<Transaction> transaction { get; set; }
+		public DbSet<Review> reviews { get; set; }
 	}
 }
