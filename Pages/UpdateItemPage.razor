@@ -1,0 +1,144 @@
+﻿@page "/update-product/{item_id}"
+
+
+@using OnlineStore.Database;
+@using OnlineStore.Domain;
+@using OnlineStore.Errors;
+@using OnlineStore.Services;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IJSRuntime js
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
+@inject OnlineStore.Services.ShopService shop_service
+@inject OnlineStore.Services.ItemService item_service
+@inject NavigationManager nav_manager
+
+<h3>Update item</h3>
+<div class="update_item_element">
+	<div>
+		<tr>
+			<td>Shop ID</td>
+			<td>ID</td>
+			<td>Name</td>
+			<td>Price</td>
+			<td>Category</td>
+			<td>Description</td>
+		</tr>
+		<tr>
+			<td>@item.ShopId</td>
+			<td>@item.id</td>
+			<td>@item.name</td>
+			<td>@item.price</td>
+			<td>@item.category</td>
+			<td>@item.description</td>
+		</tr>
+		<tr>
+			<td>@item.ShopId</td>
+			<td>@item.id</td>
+			<td>
+				<input id="name" @bind="user_input.name" />
+			</td>
+			<td>
+				<input id="price" @bind="user_input.price" />
+			</td>
+			<td>
+				<select @bind="user_input.category">
+					<option value="@ItemCategory.FOOD">Food</option>
+					<option value="@ItemCategory.CLOTHING">Clothing</option>
+					<option value="@ItemCategory.TOOLS">Tools</option>
+					<option value="@ItemCategory.NO_CATEGORY">Uncategorized</option>
+				</select>
+			</td>
+			<td>
+				<input id="description" @bind="user_input.description" />
+			</td>
+		</tr>
+
+	</div>
+	<div>
+		<button @onclick="() => update()">Update</button>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public string item_id { get; set; }
+
+	public Item item { get; set; }
+
+	public List<Shop> shops;
+	public Dictionary<string, string> shop_ids;
+
+
+	struct Input
+	{
+		public string name;
+		public int price;
+		public string description;
+		public ItemCategory category;
+	}
+
+	Input user_input = new Input();
+
+
+	protected async override Task OnInitializedAsync()
+	{
+		shops = shop_service.listShops();
+		shop_ids = new Dictionary<string, string>();
+		foreach (var s in shops)
+			shop_ids.Add(s.id, s.name);
+
+		item = item_service.getItemById(item_id);
+
+		base.OnInitialized();
+	}
+
+	public async void update()
+	{
+		try
+		{
+			if (isInputEmpty())
+				throw new InvalidInput("only description field can be empty");
+
+			if (user_input.price < 0)
+				throw new InvalidInput("price cannot be negative");
+
+			setNewValues();
+
+			item_service.updateItem(item);
+
+			await js.InvokeVoidAsync("alert", $"Success! Item {user_input.name} updated");
+
+			StateHasChanged();
+			clearInput();
+		}
+		catch (InvalidInput e)
+		{
+			await js.InvokeVoidAsync("alert", $"{e.Message}. Try again");
+		}
+	}
+
+	private bool isInputEmpty()
+	{
+		return user_input.name == "" ||
+			user_input.category == ItemCategory.UNCATEGORIZED;
+	}
+
+	private void clearInput()
+	{
+		user_input.name = "";
+		user_input.price = 0;
+		user_input.description = "";
+		user_input.category = ItemCategory.UNCATEGORIZED;
+	}
+
+	private void setNewValues()
+	{
+		item.name = user_input.name;
+		item.price = user_input.price;
+		item.category = user_input.category;
+		item.description = user_input.description;
+	}
+}

@@ -1,12 +1,15 @@
 ﻿@page "/checkout"
 
 @using OnlineStore.Services;
+@using OnlineStore.Domain;
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
 
 @inject IJSRuntime js
-@inject OnlineStore.Services.AccountService account_service
 @inject OnlineStore.Services.Authentication authentication
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.TransactionService transaction_service
+@inject OnlineStore.Services.ShoppingCartService shopping_cart_service
 @inject NavigationManager nav_manager
 
 <h3>PageCheckout</h3>
@@ -18,20 +21,22 @@
 	else
 	{
 		<tr>
-			<td>Item ID</td>
+			<td>Item name</td>
 			<td>Price</td>
+			<td>Category</td>
 		</tr>
-		@foreach (var item in account.shopping_cart.items)
+		@foreach (var item in cart.items)
 		{
 			<tr>
-				<td>@item.id</td>
+				<td>@item.name</td>
 				<td>@item.price</td>
+				<td>@item.category</td>
 			</tr>
 		}
 
 		<tr>
-			<td>Total</td>
-			<td>@total</td>
+			<td class="bold">Total</td>
+			<td class="bold">@total</td>
 		</tr>
 		<button @onclick="completeOrder">Complete order</button>
 	}
@@ -42,6 +47,7 @@
 @code {
 	double total;
 	Account? account;
+	ShoppingCart cart;
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -50,8 +56,17 @@
 		{
 			string account_id = auth.User.Identity.Name;
 			account = account_service.getAccountById(account_id);
+			//cart = shopping_cart_service.getCartByAccountId(account_id);
+			cart = shopping_cart_service[account_id];
+			if (cart is null)
+			{
+				cart = new ShoppingCart();
+				//shopping_cart_service.carts.Add(account_id, cart);
+				shopping_cart_service[account_id] = cart;
+			}
+
 			total = CheckoutService.calculateTotal(
-				account.shopping_cart.items
+				cart.items
 				.Select(item => item.price)
 				.ToArray()
 			);
@@ -65,16 +80,18 @@
 
 	private async void completeOrder()
 	{
-		if(account.shopping_cart.items.Count() == 0)
+		if (cart.items.Count() == 0)
 		{
 			await js.InvokeVoidAsync("alert", "Your shopping cart is empty!");
 			return;
 		}
 		else
 		{
-			var transaction = CheckoutService.createTransaction(account.id, total);
-			account.transactions.Add(transaction);
-			account.shopping_cart.clear();
+			Transaction transaction = new Transaction(account.id, total);
+			transaction_service.createTransaction(transaction);
+			shopping_cart_service.removeCartByAccountId(account.id);
+			cart.clear();
+
 			await js.InvokeVoidAsync("alert", "Order completed!");
 
 			nav_manager.NavigateTo("/");

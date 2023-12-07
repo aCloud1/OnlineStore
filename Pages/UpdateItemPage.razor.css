@@ -1,0 +1,21 @@
+﻿body {
+}
+
+tr {
+    padding: 20px;
+    width: auto;
+}
+
+td {
+    padding: 20px;
+    border: 1px solid black;
+}
+
+button {
+    height: auto;
+    width: auto;
+}
+
+.bold {
+    font-weight: bold;
+}

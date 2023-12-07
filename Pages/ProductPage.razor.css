@@ -1,0 +1,13 @@
+﻿.container {
+    display: flex;
+}
+
+.image {
+    width: 400px;
+    height: 400px;
+    background-color: gray;
+}
+
+.information {
+    margin-left: 100px;
+}

@@ -1,17 +1,19 @@
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Authorization;
 using OnlineStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthenticationCore();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddAuthenticationCore();
+builder.Services.AddSingleton<ShopService>();
+builder.Services.AddSingleton<ItemService>();
 builder.Services.AddSingleton<AccountService>();
-builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddSingleton<TransactionService>();
+builder.Services.AddSingleton<ShoppingCartService>();
 builder.Services.AddScoped<Authentication>();
+builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, Authentication>();
 
 

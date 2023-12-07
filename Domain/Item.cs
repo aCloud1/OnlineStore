@@ -1,19 +1,18 @@
-﻿namespace OnlineStore.Services
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace OnlineStore.Domain
 {
     public class Item
     {
         public string id { get; set; }
         public string name { get; set; }
         public double price { get; set; }
+        public string description { get; set; }
         public ItemCategory category { get; set; }
 
-        public Item(string id, int price, string name = "", ItemCategory category = ItemCategory.UNCATEGORIZED)
-        {
-            this.id = id;
-            this.price = price;
-            this.name = name;
-            this.category = category;
-        }
+        public string ShopId { get; set; }
+        [ForeignKey("ShopId")]
+        public virtual Shop Shop { get; set; }
     }
 
     public enum ItemFieldNames

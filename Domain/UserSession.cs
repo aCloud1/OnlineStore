@@ -1,4 +1,4 @@
-﻿namespace OnlineStore.Services
+﻿namespace OnlineStore.Domain
 {
     public class UserSession
     {

@@ -1,5 +1,7 @@
 ﻿@page "/register"
 
+@using OnlineStore.Database;
+@using OnlineStore.Domain;
 @using OnlineStore.Services;
 @using Microsoft.AspNetCore.Components.Authorization
 
@@ -82,14 +84,14 @@
 
 		try
 		{
-			new_account = account_service.createCustomerAccount(
-				user_input.email,
-				user_input.password,
-				user_input.personal_data
-				);
+			new_account = new Customer(Id.generate(), user_input.email, user_input.password, user_input.personal_data);
+			Account created_account = account_service.createCustomerAccount(new_account);
+			if (created_account is null)
+				throw new Errors.InternalError("");
 
 			await js.InvokeVoidAsync("alert", "Success!");
 			await authentication.updateAuthenticationState(new UserSession(new_account.id, new_account.role));
+
 			nav_manager.NavigateTo("/", true);
 		}
 		catch(ArgumentException e)
