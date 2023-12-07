@@ -1,4 +1,6 @@
-﻿namespace OnlineStore.Services
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace OnlineStore.Domain
 {
     public class Item
     {
@@ -8,14 +10,9 @@
         public string description { get; set; }
         public ItemCategory category { get; set; }
 
-        public Item(string id, int price, string name = "", string description = "", ItemCategory category = ItemCategory.UNCATEGORIZED)
-        {
-            this.id = id;
-            this.price = price;
-            this.name = name;
-            this.description = description;
-            this.category = category;
-        }
+        public string ShopId { get; set; }
+        [ForeignKey("ShopId")]
+        public virtual Shop Shop { get; set; }
     }
 
     public enum ItemFieldNames

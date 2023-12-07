@@ -1,4 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OnlineStore.Database;
+using OnlineStore.Domain;
+using OnlineStore.Errors;
+using System.Net.Mail;
 
 namespace OnlineStore.Services
 {
@@ -13,45 +18,63 @@ namespace OnlineStore.Services
 
             accounts = new List<Account>
             {
-                new Employee(Id.generate(), "admin", "admin", new Person("ad", "min", "home", "+12345678901")),
-                new Customer(Id.generate(), "user", "user", new Person("u", "ser", "home2", "+98765432109"))
+                new Employee(Id.generate(), "admin", "admin", new Person("admin", "01", "home", "+12345678901")),
+                new Customer(Id.generate(), "user", "user", new Person("user", "01", "home2", "+98765432109"))
             };
         }
 
 
         public Account? getAccountByEmail(string email_address)
 		{
-            Account? account = accounts.Find(acc => acc.email_address == email_address);
+			using (var db = new DatabaseContext())
+			{
+                //var result = db.accounts.Where(a => a.email_address == email_address).First();
+                var result = db.accounts.FirstOrDefault(a => a.email_address == email_address);
+				return result;
+			};
+            /*
+			Account? account = accounts.Find(acc => acc.email_address == email_address);
             if (account is null)
                 throw new ArgumentException($"Account with email ${email_address} does not exist.");
             return account;
+            */
 		}
 
 		public Account? getAccountById(string id)
         {
-            Account? account = accounts.Find(acc => acc.id == id);
+			using (var db = new DatabaseContext())
+			{
+				var account = db.accounts.FirstOrDefault(a => a.id == id);
+                var personal_data = db.people.FirstOrDefault(p => p.id == account.PersonId);
+                account.ShoppingCart = new ShoppingCart();
+				return account;
+			};
+            /*
+			Account? account = accounts.Find(acc => acc.id == id);
             if (account is null)
-                throw new ArgumentException($"Account with id {id} does not exist.");
+                throw new DoesNotExist($"Account with id {id} does not exist.");
             return account;
+            */
         }
 
-        public Account? createCustomerAccount(
-                                        string email_address,
-                                        string password,
-                                        Person personal_data)
+        public Account? createCustomerAccount(Account account)
         {
-			account_validator.validateName(personal_data.first_name);
-			account_validator.validateName(personal_data.second_name);
-			account_validator.validatePhoneNumber(personal_data.phone_number);
-			account_validator.validateEmailAddress(email_address);
-			account_validator.validatePassword(password);
+			account_validator.validateName(account.PersonalData.first_name);
+			account_validator.validateName(account.PersonalData.second_name);
+			account_validator.validatePhoneNumber(account.PersonalData.phone_number);
+			account_validator.validateEmailAddress(account.email_address);
+			account_validator.validatePassword(account.password);
 
-            if (personal_data.id == null)
-                personal_data.id = Id.generate();
+			if (account.PersonalData.id == null)
+				account.PersonalData.id = Id.generate();           
+			
+            using (var db = new DatabaseContext())
+			{
+				db.accounts.Add(account);
+				db.SaveChanges();
+			};
 
-            Account account = new Customer(Id.generate(), email_address, password, personal_data);
-            accounts.Add(account);
-            return account;
+			return account;
         }
 
         public void updateAccount(string account_id)
@@ -70,9 +93,9 @@ namespace OnlineStore.Services
         public void matchPasswords(Account account, string password)
         {
             if (account.password != password)
-                throw new ArgumentException($"User entered a wrong password when logging into account {account.id}.");
+                throw new InvalidCredentials("wrong email or password");
         }
-    }
+	}
 
     public static class ROLES
     {

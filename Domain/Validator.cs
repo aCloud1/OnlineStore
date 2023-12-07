@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace OnlineStore.Services
+namespace OnlineStore.Domain
 {
     public abstract class Validator
     {

@@ -1,20 +1,25 @@
 ﻿@page "/shop"
 
 @using OnlineStore.Database;
+@using OnlineStore.Errors;
+@using OnlineStore.Domain;
 @using OnlineStore.Services;
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
 
 @inject IJSRuntime js
+@inject NavigationManager nav_manager
 @inject OnlineStore.Services.AccountService account_service
 @inject OnlineStore.Services.Authentication authentication
 @inject OnlineStore.Services.ShopService shop_service
+@inject OnlineStore.Services.ItemService item_service
 
 <h3>Shop</h3>
 
 <div class="item_list_wrapper">
 	<div class="filtering">
 		<select @bind="select_shop_id">
+		<option value=""></option>
 		@foreach (var s in shop_ids)
 		{
 			<option value="@s.Key">@s.Value</option>
@@ -26,11 +31,11 @@
 			<option value="@ItemFieldNames.PRICE">Price</option>
 		</select>
 		<select @bind="category">
+			<option value="@ItemCategory.UNCATEGORIZED"></option>
 			<option value="@ItemCategory.NO_CATEGORY">All categories</option>
 			<option value="@ItemCategory.CLOTHING">Clothing</option>
 			<option value="@ItemCategory.FOOD">Food</option>
 			<option value="@ItemCategory.TOOLS">Tools</option>
-			<option value="@ItemCategory.UNCATEGORIZED">Uncategorized</option>
 		</select>
 		<input @bind="filter_text_input" />
 		<button @onclick="filterItems">Filter</button>
@@ -39,7 +44,7 @@
 		@foreach (var s in items_in_display)
 		{
 			<div class="item_wrapper">
-				<div class="item_image" @onclick="() => addToCart(s.id)">
+				<div class="item_image" @onclick="() => goToProductPage(s.id)">
 					<p>Category: @s.category</p>
 					<p>@s.id</p>
 					<p>@s.name</p>
@@ -55,7 +60,7 @@
 
 @code {
 	Account? account;
-	Shop shop;
+	Shop selected_shop;
 	List<Shop> shops;
 
 	string select_shop_id;
@@ -79,24 +84,7 @@
 		foreach (var s in shops)
 			shop_ids.Add(s.id, s.name);
 
-		// todo: delete this
-		shop = new Shop();
-		shop.items = new List<Item>	// placeholder
-			{
-				new Item("01", 20, "Hat1", "", ItemCategory.CLOTHING),
-				new Item("02", 20, "Hat2", "", ItemCategory.CLOTHING),
-				new Item("03", 60, "Jacket", "", ItemCategory.CLOTHING),
-				new Item("04", 80, "Winter Coat", "", ItemCategory.CLOTHING),
-				new Item("05", 20, "Hammer", "", ItemCategory.TOOLS),
-				new Item("06", 25, "Drill", "", ItemCategory.TOOLS),
-				new Item("07", 40, "Shovel", "", ItemCategory.TOOLS),
-				new Item("08", 2, "Apple", "", ItemCategory.FOOD),
-				new Item("09", 18, "Apple Pie", "", ItemCategory.FOOD),
-				new Item("10", 20, "Pizza", "", ItemCategory.FOOD),
-				new Item("11", 8, "Bread", "", ItemCategory.FOOD),
-				new Item("12", 100, "Generic Item", "", ItemCategory.UNCATEGORIZED)
-			};
-		items_in_display = shop.items;
+		items_in_display = shops.First().Items != null ? shops.First().Items : new List<Item>();
 
 		AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
 		try
@@ -111,20 +99,49 @@
 		base.OnInitialized();
 	}
 
-	public async void addToCart(string itemId)
+	public void goToProductPage(string id)
 	{
-		if (account == null)
-		{
-			await js.InvokeVoidAsync("alert", "You must be logged in!");
-			return;
-		}
+		nav_manager.NavigateTo($"/product/{selected_shop.id}/{id}");
+	}
 
-		Item? item;
+	public async void filterItems()
+	{
 		try
 		{
-			item = shop.getItemById(itemId);
-			account.temporary_cart.addItem(item);
-			await js.InvokeVoidAsync("alert", $"Item #{itemId} added to cart!");
+			if (emptyFieldsExist())
+				throw new InvalidInput("category cannot be empty");
+
+			selected_shop = shop_service.getShopById(select_shop_id);
+			List<Item> filtered_items = item_service.getItemsByShopId(selected_shop.id);
+			if (category != ItemCategory.NO_CATEGORY)
+				filtered_items = filtered_items.FindAll(item => item.category == category);
+
+			if (filter_text_input is not null)
+			{
+				switch (filter_by)
+				{
+					case ItemFieldNames.NAME:
+						// case sensitive!
+						filtered_items = filtered_items.FindAll(item => item.name.Contains(filter_text_input));
+						break;
+
+					case ItemFieldNames.PRICE:
+						double pr;
+						if (Double.TryParse(filter_text_input, out pr))
+							filtered_items = filtered_items.FindAll(item => item.price >= pr);
+						else
+							await js.InvokeVoidAsync("alert", $"{filter_text_input} is not a number.");
+						break;
+
+					default:
+						filtered_items = new List<Item>(filtered_items);
+						break;
+				}
+			}
+
+			items_in_display = filtered_items;
+			StateHasChanged();
+
 		}
 		catch(Exception e)
 		{
@@ -132,45 +149,8 @@
 		}
 	}
 
-	public async void filterItems()
+	private bool emptyFieldsExist()
 	{
-		foreach (var s in shop_ids)
-		{
-			await js.InvokeVoidAsync("console.log", s.Key);
-			await js.InvokeVoidAsync("console.log", s.Value[1]);
-			await js.InvokeVoidAsync("console.log", "");
-		}
-
-		// todo: add filtering by shop id
-
-		List<Item> filtered_items = shop.items;
-		if(category != ItemCategory.NO_CATEGORY)
-			filtered_items = filtered_items.FindAll(item => item.category == category);
-
-		if (filter_text_input is not null)
-		{
-			switch (filter_by)
-			{
-				case ItemFieldNames.NAME:
-					// case sensitive!
-					filtered_items = filtered_items.FindAll(item => item.name.Contains(filter_text_input));
-					break;
-
-				case ItemFieldNames.PRICE:
-					double pr;
-					if (Double.TryParse(filter_text_input, out pr))
-						filtered_items = filtered_items.FindAll(item => item.price >= pr);
-					else
-						await js.InvokeVoidAsync("alert", $"{filter_text_input} is not a number.");
-					break;
-
-				default:
-					filtered_items = new List<Item>(filtered_items);
-					break;
-			}
-		}
-
-		items_in_display = filtered_items;
-		StateHasChanged();
+		return select_shop_id == "" || category == ItemCategory.UNCATEGORIZED;
 	}
 }

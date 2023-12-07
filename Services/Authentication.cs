@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using OnlineStore.Domain;
 using System.Security.Claims;
 
 namespace OnlineStore.Services

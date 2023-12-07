@@ -1,12 +1,14 @@
 ﻿@page "/shoppingcart"
 
 @using OnlineStore.Services;
+@using OnlineStore.Domain;
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
 
 @inject IJSRuntime js
-@inject OnlineStore.Services.AccountService account_service
 @inject OnlineStore.Services.Authentication authentication
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.ShoppingCartService shopping_cart_service
 @inject NavigationManager nav_manager
 
 <h3>Shopping cart</h3>
@@ -17,24 +19,28 @@
 	}
 	else
 	{
-		if (account.temporary_cart.items.Count == 0)
+		if (cart.items.Count == 0)
 		{
 			<p>Shopping cart is empty!</p>
 		}
 		else
 		{
 			<tr>
-				<td>Item ID</td>
+				<td>Item name</td>
 				<td>Price</td>
+				<td>Category</td>
 			</tr>
-			@foreach (var item in account.temporary_cart.items)
+			@foreach (var item in cart.items)
 			{
 				<tr>
-					<td>@item.id</td>
+					<td>@item.name</td>
 					<td>@item.price</td>
+					<td>@item.category</td>
+					<button @onclick="() => removeItem(item.id)">Remove</button>
 				</tr>
 			}
 			<button @onclick="() => goToCheckout()">Go to checkout</button>
+			<button @onclick="() => clearShoppingCart()">Clear cart</button>
 		}
 	}
 </div>
@@ -42,6 +48,7 @@
 
 @code {
 	Account? account;
+	ShoppingCart cart;
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -50,12 +57,30 @@
 		{
 			string account_id = auth.User.Identity.Name;
 			account = account_service.getAccountById(account_id);
+
+			cart = shopping_cart_service.getCartByAccountId(account_id);
+			if (cart is null)
+			{
+				cart = new ShoppingCart();
+				shopping_cart_service.carts.Add(account_id, cart);
+			}
 		}
 		catch
 		{
 			Logger.log($"ShoppingCartPage: account not found.");
 		}
 		base.OnInitialized();
+	}
+
+	protected void removeItem(string id)
+	{
+		cart.removeItemById(id);
+		StateHasChanged();
+	}
+
+	protected void clearShoppingCart()
+	{
+		cart.clear();
 	}
 
 	private async void goToCheckout()

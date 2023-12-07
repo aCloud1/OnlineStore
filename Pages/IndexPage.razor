@@ -3,7 +3,9 @@
 @inject IJSRuntime js
 @inject OnlineStore.Services.AccountService account_service
 
+@using OnlineStore.Errors;
 @using OnlineStore.Services;
+@using OnlineStore.Domain;
 @using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Home</PageTitle>
@@ -33,8 +35,11 @@
 			return;
 
 		Account account = account_service.getAccountById(account_id);
-		user_name = account.personal_data.getFullName();
+		if(account == null)
+			throw new DoesNotExist($"Account with id {account_id} does not exist.");
+
+		user_name = account.PersonalData.getFullName();
 		base.OnInitialized();
 	}
-
 }
+

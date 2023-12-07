@@ -6,13 +6,16 @@ using OnlineStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthenticationCore();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<AccountService>();
+builder.Services.AddAuthenticationCore();
 builder.Services.AddSingleton<ShopService>();
-builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddSingleton<ItemService>();
+builder.Services.AddSingleton<AccountService>();
+builder.Services.AddSingleton<TransactionService>();
+builder.Services.AddSingleton<ShoppingCartService>();
 builder.Services.AddScoped<Authentication>();
+builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, Authentication>();
 
 

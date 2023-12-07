@@ -1,5 +1,7 @@
 ﻿@page "/login/{user_id}"
 
+@using OnlineStore.Domain;
+@using OnlineStore.Errors;
 @using OnlineStore.Services;
 @using Microsoft.AspNetCore.Components.Authorization
 
@@ -47,30 +49,34 @@
 
 	protected override void OnParametersSet()
 	{
-		try
-		{
+			/*
+			try
+			{
 			account = account_service.getAccountById(user_id);
 			if (account != null)
 				user_input.email_address = account.email_address;
 		}
 		catch(Exception e)
-		{
+			{
 			Logger.log($"{e.Message}. Prefilling email address field is skipped.");
 		}
+		*/
 	}
 
 	private async Task authenticate()
 	{
 		try
 		{
-			if(account is null)
-				account = account_service.getAccountByEmail(user_input.email_address);
+			account = account_service.getAccountByEmail(user_input.email_address);
+			if (account == null)
+				throw new DoesNotExist("");
+
 			account_service.matchPasswords(account, user_input.password);
 		}
 		catch (Exception e)
 		{
 			Logger.log($"{e.Message}.");
-			await js.InvokeVoidAsync("alert", "Email or password is invalid.");
+			await js.InvokeVoidAsync("alert", e.Message);
 			return;
 		}
 

@@ -1,0 +1,108 @@
+﻿@page "/product/{shop_id}/{item_id}"
+
+@using OnlineStore.Database;
+@using OnlineStore.Domain;
+@using OnlineStore.Errors;
+@using OnlineStore.Services;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IJSRuntime js
+@inject NavigationManager nav_manager
+@inject OnlineStore.Services.ShopService shop_service
+@inject OnlineStore.Services.ItemService item_service
+@inject OnlineStore.Services.Authentication authentication
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.ShoppingCartService shopping_cart_service
+
+<h3>@shop.name</h3>
+<div class="container">
+	<div class="image"></div>
+
+	<div class="information">
+		<p>ID: @item.id</p>
+		<p>Name: @item.name</p>
+		<p>Price: @item.price</p>
+		<p>Category: @item.category</p>
+		<p>Description: @item.description</p>
+		<button @onclick="() => addToCart(item.id)">Add to cart</button>
+		<AuthorizeView Roles="admin">
+			<button @onclick="() => editItem(item.id)">Edit</button>
+		</AuthorizeView>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public string shop_id { get; set; }
+	[Parameter]
+	public string item_id { get; set; }
+
+	public Shop shop;
+	public Item item;
+	public Account account;
+	public ShoppingCart cart;
+
+	protected async override Task OnInitializedAsync()
+	{
+		try
+		{
+			shop = shop_service.getShopById(shop_id);
+			item = item_service.getItemById(item_id);
+
+			AuthenticationState auth = await authentication.GetAuthenticationStateAsync();
+			try
+			{
+				string account_id = auth.User.Identity.Name;
+				account = account_service.getAccountById(account_id);
+
+				cart = shopping_cart_service.getCartByAccountId(account_id);
+				if(cart is null)
+				{
+					cart = new ShoppingCart();
+					shopping_cart_service.carts.Add(account_id, cart);
+				}
+
+			}
+			catch (Exception e)
+			{
+				Logger.log("Adding items to anonymous cart.");
+			}
+		}
+		catch(Exception e)
+		{
+
+		}
+		finally
+		{
+			base.OnInitialized();
+		}
+	}
+
+	public async void addToCart(string itemId)
+	{
+		if (account == null)
+		{
+			await js.InvokeVoidAsync("alert", "You must be logged in!");
+			return;
+		}
+
+		Item? item;
+		try
+		{
+			item = item_service.getItemByIdInShop(itemId, shop_id);
+			cart.addItem(item);
+
+			await js.InvokeVoidAsync("alert", $"{item.name} added to cart!");
+		}
+		catch (Exception e)
+		{
+			await js.InvokeVoidAsync("alert", $"{e.Message}.");
+		}
+	}
+
+	private void editItem(string item_id)
+	{
+		nav_manager.NavigateTo($"/update-product/{item_id}", true);
+	}
+}

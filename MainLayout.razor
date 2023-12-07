@@ -30,6 +30,13 @@
 					<a href="/login/user">Login</a>
 				</NotAuthorized>
 			</AuthorizeView>
+
+			<AuthorizeView Roles="admin">
+				<Authorized>
+					<a href="/create-item">Create Item</a>
+					<a href="/create-shop">Create Shop</a>
+				</Authorized>
+			</AuthorizeView>
 		</div>
 
 		<article>

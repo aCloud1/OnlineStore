@@ -1,12 +1,14 @@
 ﻿@page "/account"
 
 @using OnlineStore.Services;
+@using OnlineStore.Domain;
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
 
 @inject IJSRuntime js
 @inject OnlineStore.Services.AccountService account_service
 @inject OnlineStore.Services.Authentication authentication
+@inject OnlineStore.Services.TransactionService transaction_service
 @inject NavigationManager nav_manager
 
 <h3>AccountPage</h3>
@@ -15,11 +17,11 @@
 		<Authorized>
 			<tr>
 				<td>First name</td>
-				<td>@account?.personal_data.first_name</td>
+				<td>@account?.PersonalData.first_name</td>
 			</tr>
 			<tr>
 				<td>Second name</td>
-				<td>@account?.personal_data.second_name</td>
+				<td>@account?.PersonalData.second_name</td>
 			</tr>
 			<tr>
 				<td>Email address</td>
@@ -27,7 +29,7 @@
 			</tr>
 			<tr>
 				<td>Phone number</td>
-				<td>@account?.personal_data.phone_number</td>
+				<td>@account?.PersonalData.phone_number</td>
 			</tr>
 			<tr>
 				<td>Password</td>
@@ -36,7 +38,7 @@
 
 			<br />
 			<h3>Your transactions</h3>
-			@if(account == null || account.transactions.Count == 0)
+			@if (account is null || transactions is null || transactions.Count == 0)
 			{
 				<p>You have purchased anything yet.</p>	
 			}
@@ -47,7 +49,7 @@
 					<td>Transaction ID</td>
 					<td>Total</td>
 				</tr>
-				@foreach(var t in account.transactions)
+				@foreach(var t in transactions)
 				{
 					<tr>
 						<td>@t.date</td>
@@ -87,6 +89,7 @@
 
 @code {
 	Account? account;
+	List<Transaction> transactions;
 
 	string dataAsFormattedText = "";
 
@@ -103,6 +106,9 @@
 		try
 		{
 			account = account_service.getAccountById(account_id);
+			transactions = transaction_service.listTransactions(account.id);
+			if (transactions is null)
+				transactions = new List<Transaction>();
 		}
 		catch
 		{
@@ -119,25 +125,25 @@
 
 	public void sortTransactionsAsc()
 	{
-		account.transactions.Sort((a, b) => b.CompareTo(a));
+		transactions.Sort((a, b) => b.CompareTo(a));
 		StateHasChanged();
 	}
 
 	public void sortTransactionsDesc()
 	{
-		account.transactions.Sort();
+		transactions.Sort();
 		StateHasChanged();
 	}
 
 	public void exportAccountDataAsText()
 	{
-		dataAsFormattedText = account.personal_data.ToString("Text", null);
+		dataAsFormattedText = account.PersonalData.ToString("Text", null);
 		StateHasChanged();
 	}
 
 	public void exportAccountDataAsJSON()
 	{
-		dataAsFormattedText = account.personal_data.ToString("JSON", null);
+		dataAsFormattedText = account.PersonalData.ToString("JSON", null);
 		StateHasChanged();
 	}
 

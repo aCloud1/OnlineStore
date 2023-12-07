@@ -1,6 +1,8 @@
-﻿namespace OnlineStore.Services
+﻿using OnlineStore.Domain;
+
+namespace OnlineStore.Services
 {
-	public static class CheckoutService
+    public static class CheckoutService
 	{
 		public static double tax_rate;
 
@@ -22,19 +24,6 @@
 		public static double applyTax(double total, double tax_rate)
 		{
 			return total * tax_rate;
-		}
-
-		public static Transaction createTransaction(Account account, double total)
-		{
-			return new Transaction(account, total);
-		}
-
-		public static Transaction createTransaction(Account account, params double[] prices)
-		{
-			return new Transaction(
-				account,
-				prices.Sum()
-			);
 		}
 	}
 }

@@ -1,0 +1,55 @@
+﻿@page "/create-shop"
+
+@using OnlineStore.Database;
+@using OnlineStore.Errors;
+@using OnlineStore.Domain;
+@using OnlineStore.Services;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IJSRuntime js
+@inject OnlineStore.Services.AccountService account_service
+@inject OnlineStore.Services.Authentication authentication
+@inject OnlineStore.Services.ShopService shop_service
+@inject NavigationManager nav_manager
+
+
+<h3>Create shop</h3>
+<div class="create_item_element">
+	<div>
+		<p>Name</p>
+		<input id="name" @bind="name" />
+	</div>
+	<div>
+		<button @onclick="() => create()">Create</button>
+	</div>
+</div>
+
+
+@code {
+	public string name;
+
+	protected async override Task OnInitializedAsync()
+	{
+		base.OnInitialized();
+	}
+
+	public async void create()
+	{
+		try
+		{
+			if (name is null || name == "")
+				throw new InvalidInput("name cannot be empty.");
+
+			var shop = new Shop(name, new List<Item>());
+			shop_service.createShop(shop);
+
+			await js.InvokeVoidAsync("alert", $"Success! Shop {name} created.");
+			name = null;
+		}
+		catch(Exception e)
+		{
+			await js.InvokeVoidAsync("alert", $"{e.Message}. Try again.");
+		}
+	}
+}
