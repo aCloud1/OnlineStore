@@ -56,11 +56,11 @@
 				string account_id = auth.User.Identity.Name;
 				account = account_service.getAccountById(account_id);
 
-				cart = shopping_cart_service.getCartByAccountId(account_id);
+				cart = shopping_cart_service[account_id];
 				if(cart is null)
 				{
 					cart = new ShoppingCart();
-					shopping_cart_service.carts.Add(account_id, cart);
+					shopping_cart_service[account_id] = cart;
 				}
 
 			}

@@ -1,14 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OnlineStore.Database;
+﻿using OnlineStore.Database;
 using OnlineStore.Domain;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
-using System.Linq;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace OnlineStore.Services
 {
-    public class ItemService
+	public class ItemService
 	{
 
 		public ItemService() { }

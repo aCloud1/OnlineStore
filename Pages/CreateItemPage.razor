@@ -152,7 +152,10 @@
 
 	private bool isInputEmpty()
 	{
-		return name == "" || select_shop is null || select_shop == "" || category == ItemCategory.UNCATEGORIZED;
+		return name == "" ||
+		select_shop is null ||
+		select_shop == "" ||
+		category == ItemCategory.UNCATEGORIZED;
 	}
 
 	private void clearFields()

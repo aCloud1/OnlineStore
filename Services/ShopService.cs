@@ -1,13 +1,9 @@
-﻿using NuGet.Protocol;
-using OnlineStore.Database;
+﻿using OnlineStore.Database;
 using OnlineStore.Domain;
-using System.Data.Entity;
-using System.Linq;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace OnlineStore.Services
 {
-    public class ShopService
+	public class ShopService
 	{
 
 		public ShopService() { }
@@ -47,24 +43,7 @@ namespace OnlineStore.Services
 			{
 				Shop result = db.shops.SingleOrDefault(s => s.id == id);
 				return result;
-				/*
-				var query = await(from s in db.shops
-							where s.id == id
-							select s).ToListAsync();
-				return query.ToList().First();
-				*/
 			};
 		}
-
-		/*
-		public void addItemToShop(Shop shop, Item item)
-		{
-			using (var db = new DatabaseContext())
-			{
-				shop.Items.Add(item);
-				db.SaveChanges();
-			}
-		}
-		*/
 	}
 }

@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Components.Web;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineStore.Domain
 {
-    public class Transaction : IComparable<Transaction>, IEquatable<Transaction>
+	public class Transaction : IComparable<Transaction>, IEquatable<Transaction>
     {
         public string id { get; set; }
         public string AccountId { get; set; }

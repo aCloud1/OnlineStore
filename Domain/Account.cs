@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Migrations;
-using OnlineStore.Services;
+﻿using OnlineStore.Services;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineStore.Domain
 {
-    public abstract class Account
+	public abstract class Account
     {
         public string id { get; set; }
         public string role { get; set; }

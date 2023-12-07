@@ -1,9 +1,11 @@
 ﻿using OnlineStore.Domain;
+using System.Collections;
 
 namespace OnlineStore.Services
 {
-	public class ShoppingCartService
+	public class ShoppingCartService : IEnumerable<ShoppingCart>
 	{
+		// account id -> cart
 		public Dictionary<string, ShoppingCart> carts;
 
 		public ShoppingCartService()
@@ -11,30 +13,33 @@ namespace OnlineStore.Services
 			carts = new Dictionary<string, ShoppingCart>();
 		}
 
-		/*
-		public void addItemToCart(string cart_id, Item item)
+		public ShoppingCart this[string id]
 		{
-			ShoppingCart cart = getCartBy(cart_id);
-			if(cart is null)
-			{
-				cart = new ShoppingCart();
-				carts.Add(cart);
+			get {
+				ShoppingCart cart = null;
+				if (carts.ContainsKey(id))
+					cart = carts[id];
+				return cart;
 			}
-			cart.addItem(item);
-		}
-		*/
-
-		public ShoppingCart? getCartByAccountId(string id)
-		{
-			ShoppingCart cart = null;
-			if(carts.ContainsKey(id))
-				cart = carts[id];
-			return cart;
+			set
+			{
+				carts.Add(id, value);
+			}
 		}
 
 		public void removeCartByAccountId(string id)
 		{
 			carts.Remove(id);
+		}
+
+		public IEnumerator<ShoppingCart> GetEnumerator()
+		{
+			return carts.Values.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

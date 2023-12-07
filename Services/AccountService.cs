@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using OnlineStore.Database;
+﻿using OnlineStore.Database;
 using OnlineStore.Domain;
 using OnlineStore.Errors;
-using System.Net.Mail;
 
 namespace OnlineStore.Services
 {
-    public class AccountService
+	public class AccountService
     {
         private AccountValidator account_validator;
         private List<Account> accounts;
@@ -28,16 +25,9 @@ namespace OnlineStore.Services
 		{
 			using (var db = new DatabaseContext())
 			{
-                //var result = db.accounts.Where(a => a.email_address == email_address).First();
                 var result = db.accounts.FirstOrDefault(a => a.email_address == email_address);
 				return result;
 			};
-            /*
-			Account? account = accounts.Find(acc => acc.email_address == email_address);
-            if (account is null)
-                throw new ArgumentException($"Account with email ${email_address} does not exist.");
-            return account;
-            */
 		}
 
 		public Account? getAccountById(string id)
@@ -49,12 +39,6 @@ namespace OnlineStore.Services
                 account.ShoppingCart = new ShoppingCart();
 				return account;
 			};
-            /*
-			Account? account = accounts.Find(acc => acc.id == id);
-            if (account is null)
-                throw new DoesNotExist($"Account with id {id} does not exist.");
-            return account;
-            */
         }
 
         public Account? createCustomerAccount(Account account)

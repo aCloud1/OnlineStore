@@ -1,5 +1,4 @@
-﻿using Microsoft.Identity.Client;
-using OnlineStore.Database;
+﻿using OnlineStore.Database;
 using OnlineStore.Domain;
 
 namespace OnlineStore.Services

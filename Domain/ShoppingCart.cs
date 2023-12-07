@@ -22,7 +22,6 @@ namespace OnlineStore.Domain
 
         public Item getItemByIndex(int index)
         {
-            // todo: add error checking
             return items[index];
         }
 

@@ -47,22 +47,6 @@
 	UserInput user_input = new UserInput();
 	Account? account;
 
-	protected override void OnParametersSet()
-	{
-			/*
-			try
-			{
-			account = account_service.getAccountById(user_id);
-			if (account != null)
-				user_input.email_address = account.email_address;
-		}
-		catch(Exception e)
-			{
-			Logger.log($"{e.Message}. Prefilling email address field is skipped.");
-		}
-		*/
-	}
-
 	private async Task authenticate()
 	{
 		try
